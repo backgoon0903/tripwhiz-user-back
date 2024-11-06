@@ -3,7 +3,8 @@ package com.tripwhiz.tripwhizuserback.member.controller;
 import com.tripwhiz.tripwhizuserback.member.dto.MemberDTO;
 import com.tripwhiz.tripwhizuserback.member.dto.TokenResponseDTO;
 import com.tripwhiz.tripwhizuserback.member.exception.MemberExceptions;
-import com.tripwhiz.tripwhizuserback.member.service.MemberService;
+import com.tripwhiz.tripwhizuserback.member.service.GoogleService;
+import com.tripwhiz.tripwhizuserback.member.service.KakaoService;
 import com.tripwhiz.tripwhizuserback.security.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class KakaoLoginController {
 
-    private final MemberService memberService;
+    private final KakaoService kakaoService;
 
     private final JWTUtil jwtUtil;
 
@@ -44,7 +45,7 @@ public class KakaoLoginController {
         log.info("Kakao access token:" + accessToken);
 
         // 카카오 인증 토큰을 사용하여 사용자 정보를 조회
-        MemberDTO memberDTO = memberService.authKakao(accessToken);
+        MemberDTO memberDTO = kakaoService.authKakao(accessToken);
 
         log.info(memberDTO);
 
@@ -132,4 +133,5 @@ public class KakaoLoginController {
             }
         }
     }
+
 }

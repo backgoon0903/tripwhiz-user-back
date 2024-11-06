@@ -42,9 +42,15 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
 
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'com.google.auth:google-auth-library-oauth2-http:1.29.0'
+
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
 
     implementation 'net.coobird:thumbnailator:0.4.19'
+
+
+
 }
 
 tasks.named('test') {
