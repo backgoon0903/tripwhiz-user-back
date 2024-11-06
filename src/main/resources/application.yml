@@ -1,6 +1,6 @@
 spring:
   application:
-    name: demo6
+    name: tripwhiz-user-back
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://localhost:13306/team4userdb
