@@ -10,9 +10,8 @@ public class TripwhizUserBackApplication {
 
     public static void main(String[] args) {
 
-        log.info("--------------------------");
         SpringApplication.run(TripwhizUserBackApplication.class, args);
-        log.info("--------------------------");
+
     }
 
 }
