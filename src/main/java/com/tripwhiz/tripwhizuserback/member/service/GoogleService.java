@@ -5,12 +5,10 @@ import com.tripwhiz.tripwhizuserback.member.dto.MemberDTO;
 import com.tripwhiz.tripwhizuserback.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -83,17 +81,31 @@ public class GoogleService {
         // 헤더를 포함한 HTTP 엔터티를 생성
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        // Google API에 요청을 보내고, 응답을 Map 형식으로 받음
-        UriComponents uriBuilder = UriComponentsBuilder.fromHttpUrl(googleUserInfoURL).build();
-        ResponseEntity<Map> response = restTemplate.exchange(uriBuilder.toString(), HttpMethod.GET, entity, Map.class);
+        try {
+            // Google API에 요청을 보냄
+            ResponseEntity<Map> response = restTemplate.exchange(googleUserInfoURL, HttpMethod.GET, entity, Map.class);
+            Map<String, Object> payload = response.getBody();
 
-        // 응답 본문에서 유효한 사용자 정보 추출
-        Map<String, Object> payload = response.getBody();
+            // 응답 로그 출력
+            log.info("Google API Response: {}", payload);
 
-        log.info("Google API Response: {}", payload);
+            // 이메일을 추출하고, 로그로 확인
+            String email = (String) payload.get("email");
+            log.info("Extracted Email: {}", email);
 
-        // 사용자 이메일을 반환
-        return (String) payload.get("email");
+            // 이메일이 없다면 에러를 던짐
+            if (email == null || email.isEmpty()) {
+                throw new RuntimeException("No email found in Google API response");
+            }
+            return email;
+
+//            return payload; // 전체 사용자 정보 반환
+
+        } catch (HttpClientErrorException e) {
+            log.error("Error during Google API request: {}", e.getStatusCode());
+            log.error("Response Body: {}", e.getResponseBodyAsString());
+            throw new RuntimeException("Failed to retrieve email from Google API", e);
+        }
 
     }
 }
