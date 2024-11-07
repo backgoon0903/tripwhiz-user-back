@@ -3,7 +3,6 @@ package com.tripwhiz.tripwhizuserback.member.controller;
 import com.tripwhiz.tripwhizuserback.member.dto.MemberDTO;
 import com.tripwhiz.tripwhizuserback.member.dto.TokenResponseDTO;
 import com.tripwhiz.tripwhizuserback.member.exception.MemberExceptions;
-import com.tripwhiz.tripwhizuserback.member.service.GoogleService;
 import com.tripwhiz.tripwhizuserback.member.service.KakaoService;
 import com.tripwhiz.tripwhizuserback.security.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -69,11 +68,11 @@ public class KakaoLoginController {
     }
 
     // Refresh token을 사용하여 새로운 Access token을 발급하는 엔드포인트
-    @PostMapping(value = "refreshToken",
+    @PostMapping(value = "kakao/refreshToken",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<TokenResponseDTO> refreshToken(
+    public ResponseEntity<TokenResponseDTO> kakaorefreshToken(
             @RequestHeader("Authorization") String accessToken,
             String refreshToken) {
 
