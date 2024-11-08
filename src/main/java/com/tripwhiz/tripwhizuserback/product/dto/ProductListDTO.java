@@ -5,18 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductReadDTO {
+public class ProductListDTO {
 
     private Long pno;
 
     private String pname;
-
-    private String pdesc;
 
     private int price;
 
