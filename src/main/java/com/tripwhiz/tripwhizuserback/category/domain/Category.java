@@ -20,7 +20,7 @@ public class Category {
 
     private boolean delFlag;
 
-    @ManyToOne
-    private ParentCategory parentCategory;
+//    @ManyToOne
+//    private ParentCategory parentCategory;
 
 }

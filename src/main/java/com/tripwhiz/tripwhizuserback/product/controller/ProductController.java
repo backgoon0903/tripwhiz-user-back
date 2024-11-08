@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,25 +17,26 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
-@Log4j2
 @RestController
 @RequestMapping("/api/v1/product")
+@Log4j2
 @RequiredArgsConstructor
-@PreAuthorize("permitAll()")
 public class ProductController {
 
     private final ProductService productService;
 
-    @GetMapping("list")
+    @GetMapping("/list/{dno}")
     public ResponseEntity<PageResponseDTO<ProductListDTO>> list(
-            PageRequestDTO requestDTO
+            @Validated PageRequestDTO requestDTO,
+            @PathVariable("dno") Long dno
     ){
 
-        log.info("---------------Product Controller list");
-        log.info("==================");
+        log.info("---------------------Product Controller list");
+        log.info("======================");
+        log.info(productService.list(requestDTO, dno));
 
 
-        return ResponseEntity.ok(productService.list(requestDTO));
+        return ResponseEntity.ok(productService.list(requestDTO, dno));
     }
 
     @GetMapping("/{pno}")
