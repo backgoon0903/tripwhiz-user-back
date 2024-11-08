@@ -12,9 +12,11 @@ import lombok.NoArgsConstructor;
 public class ProductListDTO {
 
     private Long pno;
-    private String pname;
-    private int price;
-    private String fileName;
 
+    private String pname;
+
+    private int price;
+
+    private String fileName;
 
 }
