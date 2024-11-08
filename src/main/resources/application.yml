@@ -35,6 +35,7 @@ com:
     alwaysNew: true
     upload:
       path: /c/upload/attach # image upload path
+      qrpath: qrimages
 
 logging:
   level:
@@ -45,9 +46,3 @@ logging:
   web:
     resources:
       add-mappings: false
-
-# Toss Payments 설정 추가
-toss:
-  payments:
-    base-url: https://api.tosspayments.com/v1
-    secret-key: test_sk_ALnQvDd2VJ2gbbQZZEMPVMj7X41m # 실제 secret key로 대체하세요

@@ -30,8 +30,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
     @Override
     public Page<Product> list(Pageable pageable) {
-
-        log.info("---------list------------");
+        log.info("-------------------list-----------");
 
         QProduct product = QProduct.product;
         QAttachFile attachFile = QAttachFile.attachFile;
@@ -42,35 +41,31 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         query.where(attachFile.ord.eq(0));
         query.groupBy(product);
 
+        // 페이징 및 정렬 처리
         this.getQuerydsl().applyPagination(pageable, query);
 
-        JPQLQuery<Tuple> tupleQuery =
-                query.select(
-                        product,
-                        attachFile.filename
-                );
+        JPQLQuery<Tuple> tupleQuery = query.select(
+                product,
+                attachFile.filename
+        );
 
         tupleQuery.fetch();
-
         return null;
     }
 
     @Override
-    public PageResponseDTO<ProductListDTO> listByCno(Long dno, PageRequestDTO pageRequestDTO) {
-
-        Pageable pageable =
-                PageRequest.of(
-                        pageRequestDTO.getPage() -1,
-                        pageRequestDTO.getSize(),
-                        Sort.by("pno").descending()
-                );
+    public PageResponseDTO<ProductListDTO> listByDno(Long dno, PageRequestDTO pageRequestDTO) {
+        Pageable pageable = PageRequest.of(
+                pageRequestDTO.getPage() - 1,
+                pageRequestDTO.getSize(),
+                Sort.by("pno").descending()
+        );
 
         QProduct product = QProduct.product;
         QAttachFile attachFile = QAttachFile.attachFile;
         QCategoryProduct categoryProduct = QCategoryProduct.categoryProduct;
 
         JPQLQuery<Product> query = from(product);
-
         query.leftJoin(categoryProduct).on(categoryProduct.product.eq(product));
         query.leftJoin(product.attachFiles, attachFile);
 
@@ -78,30 +73,34 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         query.where(categoryProduct.category.dno.eq(dno));
         query.groupBy(product);
 
-        JPQLQuery<Tuple> tupleQuery =
-                query.select(
-                        product,
-                        attachFile.filename
-                );
+        // 페이징 및 정렬 처리
+        this.getQuerydsl().applyPagination(pageable, query);
+
+        // 쿼리 수정: count()를 추가하여 총 개수와 파일명 가져오기
+        JPQLQuery<Tuple> tupleQuery = query.select(
+                product,
+                attachFile.filename,
+                product.count()
+        );
 
         List<Tuple> tupleList = tupleQuery.fetch();
-
         log.info(tupleList);
 
-        if(tupleList.isEmpty()) {
+        if (tupleList.isEmpty()) {
             return null;
         }
 
         List<ProductListDTO> dtoList = new ArrayList<>();
 
         tupleList.forEach(t -> {
-            Product productObj = t.get(0, Product.class);
-            String filename = t.get(1, String.class);
+            Product productObj = t.get(product); // QProduct에서 Product 객체 직접 추출
+            String fileName = t.get(attachFile.filename);
+            Long count = t.get(product.count()); // count 값 추출
 
             ProductListDTO dto = ProductListDTO.builder()
                     .pno(productObj.getPno())
                     .pname(productObj.getPname())
-                    .fileName(filename)
+                    .fileName(fileName)
                     .build();
 
             dtoList.add(dto);
@@ -114,9 +113,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
                 .totalCount(total)
                 .pageRequestDTO(pageRequestDTO)
                 .build();
-
     }
-
     @Override
     public Optional<ProductReadDTO> read(Long pno) {
 
