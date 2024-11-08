@@ -39,7 +39,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.list(requestDTO, dno));
     }
 
-    @GetMapping("read/{pno}")
+    @GetMapping("/read/{pno}")
     public ResponseEntity<ProductReadDTO> getProduct(@PathVariable Long pno) {
         Optional<ProductReadDTO> productObj = productService.getProductById(pno);
 

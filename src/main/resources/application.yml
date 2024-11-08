@@ -1,6 +1,12 @@
 spring:
   application:
     name: tripwhiz-user-back
+#  datasource:
+#    driver-class-name: org.mariadb.jdbc.Driver
+#    url: jdbc:mariadb://10.10.10.104:13306/tripwhiz
+#    username: debugger
+#    password: debugger
+
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://10.10.10.104:13306/tripwhiz
@@ -34,7 +40,8 @@ com:
     refreshTime: 10080
     alwaysNew: true
     upload:
-      path: upload
+      path: /c/upload/attach # image upload path
+      qrpath: qrimages
 
 logging:
   level:
@@ -45,9 +52,3 @@ logging:
   web:
     resources:
       add-mappings: false
-
-# Toss Payments 설정 추가
-toss:
-  payments:
-    base-url: https://api.tosspayments.com/v1
-    secret-key: test_sk_ALnQvDd2VJ2gbbQZZEMPVMj7X41m # 실제 secret key로 대체하세요
