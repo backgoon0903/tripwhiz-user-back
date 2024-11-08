@@ -34,7 +34,7 @@ com:
     refreshTime: 10080
     alwaysNew: true
     upload:
-      path: upload
+      path: /c/upload/attach # image upload path
       qrpath: qrimages
 
 logging:

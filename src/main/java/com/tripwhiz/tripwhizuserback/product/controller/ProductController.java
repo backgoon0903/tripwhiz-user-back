@@ -39,7 +39,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.list(requestDTO, dno));
     }
 
-    @GetMapping("/{pno}")
+    @GetMapping("/read/{pno}")
     public ResponseEntity<ProductReadDTO> getProduct(@PathVariable Long pno) {
         Optional<ProductReadDTO> productObj = productService.getProductById(pno);
 
@@ -48,5 +48,7 @@ public class ProductController {
         return productObj.isPresent() ? ResponseEntity.ok(productObj.get()) : ResponseEntity.notFound().build();
 
     }
+
+
 
 }
