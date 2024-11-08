@@ -1,84 +1,71 @@
-package com.tripwhiz.tripwhizuserback.category.repository;
+package com.tripwhiz.tripwhizuserback;
 
 import com.tripwhiz.tripwhizuserback.category.domain.Category;
-import com.tripwhiz.tripwhizuserback.category.domain.ParentCategory;
+import com.tripwhiz.tripwhizuserback.category.domain.CategoryProduct;
+import com.tripwhiz.tripwhizuserback.category.repository.CategoryProductRepository;
+import com.tripwhiz.tripwhizuserback.category.repository.CategoryRepository;
+import com.tripwhiz.tripwhizuserback.product.domain.AttachFile;
+import com.tripwhiz.tripwhizuserback.product.domain.Product;
+import com.tripwhiz.tripwhizuserback.product.repository.ProductRepository;
 import lombok.extern.log4j.Log4j2;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
+@SpringBootTest
 @Log4j2
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class CategoryRepoTests {
-
-    @Autowired
-    private ParentCategoryRepository parentCategoryRepository;
 
     @Autowired
     private CategoryRepository categoryRepository;
 
-    private ParentCategory parentCategory;
+    @Autowired
+    private ProductRepository productRepository;
 
-    @BeforeEach
-    void setUp() {
-        // 이미 존재하는 부모 카테고리가 없으면 새로 생성하여 테스트용으로 사용
-        Optional<ParentCategory> existingParent = parentCategoryRepository.findById(1L);
-        parentCategory = existingParent.orElseGet(() ->
-                parentCategoryRepository.save(
-                        ParentCategory.builder()
-                                .cname("Default Parent Category")
-                                .theme("Default Theme")
-                                .delFlag(false)
-                                .build()));
-    }
+    @Autowired
+    private CategoryProductRepository categoryProductRepository;
 
     @Test
-    @DisplayName("5개의 ParentCategory 더미 데이터 생성 및 저장 테스트")
+    @Transactional
     @Commit
-    public void createAndSaveParentCategories() {
-        // 5개의 부모 카테고리 생성 및 저장
-        List<ParentCategory> parentCategories = IntStream.rangeClosed(1, 5)
-                .mapToObj(i -> ParentCategory.builder()
-                        .cname("Parent Category " + i)
-                        .theme("Default Theme " + i)
-                        .delFlag(false)
-                        .build())
-                .map(parentCategoryRepository::save)
-                .collect(Collectors.toList());
+    public void testInsertCategoryProductRelation() {
+        // 카테고리 생성 및 저장
+        Category category = Category.builder()
+                .dname("전자기기")
+                .delFlag(false)
+                .build();
+        categoryRepository.save(category);
+        log.info("Inserted Category: " + category);
 
-        // 저장된 부모 카테고리 개수 검증
-        long count = parentCategoryRepository.count();
-        assertThat(count).isGreaterThanOrEqualTo(5); // 최소 5개의 부모 카테고리가 저장되었는지 확인
-    }
+        // 프로덕트 생성 및 저장
+        Product product = Product.builder()
+                .pname("스마트폰")
+                .pdesc("최신 스마트폰 모델")
+                .price(1000000)
+                .delFlag(false)
+                .attachFiles(new HashSet<>(Set.of(new AttachFile(0, "smartphone.jpg"))))
+                .build();
+        productRepository.save(product);
+        log.info("Inserted Product: " + product);
 
-    @Test
-    @DisplayName("10개의 Category 더미 데이터 생성 및 저장 테스트")
-    @Commit
-    public void createAndSaveCategories() {
-        // 10개의 자식 카테고리 생성 및 저장
-        IntStream.rangeClosed(1, 10).forEach(i -> {
-            Category category = Category.builder()
-                    .dname("Category " + i)
-                    .delFlag(false)
-                    .parentCategory(parentCategory) // 부모 카테고리 설정
-                    .build();
-            categoryRepository.save(category);
-        });
+        // 카테고리와 프로덕트를 연결하는 CategoryProduct 생성 및 저장
+        CategoryProduct categoryProduct = CategoryProduct.builder()
+                .category(category)
+                .product(product)
+                .build();
+        categoryProductRepository.save(categoryProduct);
+        log.info("Inserted CategoryProduct: " + categoryProduct + " with Category: " + category.getDname() + " and Product: " + product.getPname());
 
-        // 저장된 자식 카테고리 개수 검증
-        long categoryCount = categoryRepository.count();
-        assertThat(categoryCount).isGreaterThanOrEqualTo(10); // 최소 10개의 카테고리가 저장되었는지 확인
+        // 검증: CategoryProduct가 데이터베이스에 잘 저장되었는지 확인
+        long categoryProductCount = categoryProductRepository.count();
+        assertThat(categoryProductCount).isEqualTo(1);
+        log.info("Total CategoryProduct in DB: " + categoryProductCount);
     }
 }
