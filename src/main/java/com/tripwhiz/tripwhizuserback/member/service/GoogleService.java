@@ -98,7 +98,6 @@ public class GoogleService {
                 throw new RuntimeException("No email found in Google API response");
             }
             return email;
-
 //            return payload; // 전체 사용자 정보 반환
 
         } catch (HttpClientErrorException e) {
