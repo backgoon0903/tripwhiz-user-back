@@ -1,5 +1,13 @@
 package com.tripwhiz.tripwhizuserback;
 
+import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import java.util.Optional;
+
 import com.tripwhiz.tripwhizuserback.category.domain.Category;
 import com.tripwhiz.tripwhizuserback.category.domain.CategoryProduct;
 import com.tripwhiz.tripwhizuserback.category.repository.CategoryProductRepository;
@@ -19,12 +27,25 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+
 @SpringBootTest
 @Log4j2
 public class CategoryRepoTests {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+
+    @Test
+    public void testCategory() {
+
+        log.info("------------------");
+
+        log.info(categoryRepository.findByDno(1L));
+
+    }
+
+
 
     @Autowired
     private ProductRepository productRepository;
@@ -68,4 +89,5 @@ public class CategoryRepoTests {
         assertThat(categoryProductCount).isEqualTo(1);
         log.info("Total CategoryProduct in DB: " + categoryProductCount);
     }
+
 }
