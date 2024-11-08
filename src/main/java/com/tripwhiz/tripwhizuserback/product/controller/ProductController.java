@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/product")
+@RequestMapping("/api/product")
 @Log4j2
 @RequiredArgsConstructor
 public class ProductController {
