@@ -21,10 +21,9 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    public PageResponseDTO<ProductListDTO> list(PageRequestDTO pageRequestDTO, Long dno) {
     private final CustomFileUtil customFileUtil;
 
-    public PageResponseDTO<ProductListDTO> list(PageRequestDTO pageRequestDTO) {
+    public PageResponseDTO<ProductListDTO> list(PageRequestDTO pageRequestDTO, Long dno) {
 
         log.info("2------------------------------");
         log.info(productRepository.listByDno(dno,pageRequestDTO));
