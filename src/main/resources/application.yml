@@ -40,14 +40,14 @@ logging:
   level:
     org.springframework.security.web: TRACE
 
-  spring:
-    mvc:
-      throw-exception-if-no-handler-found: true
-    web:
-      resources:
-        add-mappings: false
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
 
-
-
-
-
+# Toss Payments 설정 추가
+toss:
+  payments:
+    base-url: https://api.tosspayments.com/v1
+    secret-key: test_sk_ALnQvDd2VJ2gbbQZZEMPVMj7X41m # 실제 secret key로 대체하세요
