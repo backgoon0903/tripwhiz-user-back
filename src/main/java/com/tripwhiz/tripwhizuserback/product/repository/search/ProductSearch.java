@@ -12,9 +12,9 @@ import java.util.Optional;
 
 public interface ProductSearch {
 
-    Page<Product> list(Pageable pageable) ;
+    Page<Product> list(Pageable pageable);
 
-    PageResponseDTO<ProductListDTO> listByCno(Long dno, PageRequestDTO pageRequestDTO);
+    PageResponseDTO<ProductListDTO> listByDno(Long dno, PageRequestDTO pageRequestDTO);
 
     Optional<ProductReadDTO> read(Long pno);
 

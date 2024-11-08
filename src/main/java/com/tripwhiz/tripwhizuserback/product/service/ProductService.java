@@ -20,10 +20,12 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    public PageResponseDTO<ProductListDTO> list(PageRequestDTO pageRequestDTO) {
+    public PageResponseDTO<ProductListDTO> list(PageRequestDTO pageRequestDTO, Long dno) {
 
-        return productRepository.listByCno(1L, pageRequestDTO);
+        log.info("2------------------------------");
+        log.info(productRepository.listByDno(dno,pageRequestDTO));
 
+        return productRepository.listByDno(dno,pageRequestDTO);
     }
 
     public Optional<ProductReadDTO> getProductById(Long pno) {
