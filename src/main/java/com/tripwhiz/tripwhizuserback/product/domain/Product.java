@@ -12,7 +12,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@ToString(exclude = {"attachFiles"})
+@ToString
 @Table(name = "product")
 public class Product {
 
@@ -28,9 +28,9 @@ public class Product {
 
     private int price;
 
-    @ElementCollection
-    @Builder.Default
-    private Set<AttachFile> attachFiles = new HashSet<>();
+//    @ElementCollection
+//    @Builder.Default
+//    private Set<AttachFile> attachFiles = new HashSet<>();
 
     private boolean delFlag;
 
@@ -38,12 +38,12 @@ public class Product {
         this.delFlag = newDelFlag;
     }
 
-    public void addFile(String filename){
-        attachFiles.add(new AttachFile(attachFiles.size(), filename));
-    }
-
-    public void clearFiles(){
-        attachFiles.clear();
-    }
+//    public void addFile(String filename){
+//        attachFiles.add(new AttachFile(attachFiles.size(), filename));
+//    }
+//
+//    public void clearFiles(){
+//        attachFiles.clear();
+//    }
 
 }
