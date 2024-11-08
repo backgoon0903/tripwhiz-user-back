@@ -39,7 +39,7 @@ public class GoogleLoginController {
     @RequestMapping("google")
     public ResponseEntity<TokenResponseDTO> googleToken(@RequestParam String accessToken) {
 
-        log.info("Google access token:" +accessToken);
+        log.info("Google access token:" + accessToken);
 
         // 구글 인증 토큰을 사용하여 사용자 정보를 조회
         MemberDTO memberDTO = googleService.authGoogle(accessToken);
@@ -114,11 +114,15 @@ public class GoogleLoginController {
             try {
                 Map<String, Object> payload = jwtUtil.validateToken(refreshToken);
                 String email = payload.get("email").toString();
+                String newAccessToken = null;
+                String newRefreshToken = null;
 
-                // RefreshToken이 유효한 경우 새로운 액세스 토큰을 발급
-                String newAccessToken = jwtUtil.createToken(Map.of("email", email), accessTime);
-                String newRefreshToken = jwtUtil.createToken(Map.of("email", email), refreshTime);
-
+                // alwaysNew 설정에 따라 새 토큰을 생성할지 결정
+                if(alwaysNew) {
+                    Map<String, Object> claimMap = Map.of("email", email);
+                    newAccessToken = jwtUtil.createToken(claimMap,accessTime);
+                    newRefreshToken = jwtUtil.createToken(claimMap,refreshTime);
+                }
                 // 새로 생성된 토큰 정보를 응답에 포함
                 TokenResponseDTO tokenResponseDTO = new TokenResponseDTO();
                 tokenResponseDTO.setAccessToken(newAccessToken);
