@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
-    Optional<Category> findByDno(Long dno);
+    Optional<Category> findByCno(Long Cno);
 
 }

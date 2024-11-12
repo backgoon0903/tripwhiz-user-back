@@ -9,7 +9,6 @@ import com.tripwhiz.tripwhizuserback.product.domain.Product;
 import com.tripwhiz.tripwhizuserback.product.domain.QAttachFile;
 import com.tripwhiz.tripwhizuserback.product.domain.QProduct;
 import com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO;
-import com.tripwhiz.tripwhizuserback.product.dto.ProductReadDTO;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -54,7 +53,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
     }
 
     @Override
-    public PageResponseDTO<ProductListDTO> listByDno(Long dno, PageRequestDTO pageRequestDTO) {
+    public PageResponseDTO<ProductListDTO> listByCno(PageRequestDTO pageRequestDTO) {
         Pageable pageable = PageRequest.of(
                 pageRequestDTO.getPage() - 1,
                 pageRequestDTO.getSize(),
@@ -70,7 +69,6 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         query.leftJoin(product.attachFiles, attachFile);
 
         query.where(attachFile.ord.eq(0));
-        query.where(categoryProduct.category.dno.eq(dno));
         query.groupBy(product);
 
         // 페이징 및 정렬 처리
@@ -100,6 +98,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
             ProductListDTO dto = ProductListDTO.builder()
                     .pno(productObj.getPno())
                     .pname(productObj.getPname())
+                    .price(productObj.getPrice())
                     .fileName(fileName)
                     .build();
 
@@ -113,35 +112,6 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
                 .totalCount(total)
                 .pageRequestDTO(pageRequestDTO)
                 .build();
-    }
-    @Override
-    public Optional<ProductReadDTO> read(Long pno) {
-
-        QProduct product = QProduct.product;
-//        QAttachFile attachFile = QAttachFile.attachFile;
-
-        JPQLQuery<Product> query = from(product)
-//                .leftJoin(product.attachFiles, attachFile)
-                .where(product.pno.eq(pno));
-
-        Product productEntity = query.fetchOne();
-
-        if (productEntity == null) {
-
-            return Optional.empty();
-
-        }
-
-        ProductReadDTO dto = ProductReadDTO.builder()
-                .pno(productEntity.getPno())
-                .pname(productEntity.getPname())
-                .pdesc(productEntity.getPdesc())
-                .price(productEntity.getPrice())
-//                .attachFiles(productEntity.getAttachFiles())
-                .build();
-
-        return Optional.of(dto);
-
     }
 
 }

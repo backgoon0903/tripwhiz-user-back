@@ -25,18 +25,17 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @GetMapping("/list/{dno}")
+    @GetMapping("/list")
     public ResponseEntity<PageResponseDTO<ProductListDTO>> list(
-            @Validated PageRequestDTO requestDTO,
-            @PathVariable("dno") Long dno
+            @Validated PageRequestDTO requestDTO
     ){
 
         log.info("---------------------Product Controller list");
         log.info("======================");
-        log.info(productService.list(requestDTO, dno));
+        log.info(productService.list(requestDTO));
 
 
-        return ResponseEntity.ok(productService.list(requestDTO, dno));
+        return ResponseEntity.ok(productService.list(requestDTO));
     }
 
     @GetMapping("/read/{pno}")
