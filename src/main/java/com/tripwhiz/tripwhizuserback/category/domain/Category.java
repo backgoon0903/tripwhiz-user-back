@@ -18,8 +18,12 @@ public class Category {
     @Column(nullable = false, length = 50)
     private String cname;
 
-    private ParentCategory category;
+    @Builder.Default
+    private ParentCategory category = ParentCategory.All;
 
     private boolean delFlag;
+
+    @Builder.Default
+    private ThemeCategory themeCategory = ThemeCategory.휴양;
 
 }
