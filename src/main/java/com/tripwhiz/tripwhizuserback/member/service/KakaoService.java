@@ -30,8 +30,10 @@ public class KakaoService {
         log.info("---------authKakao-------");
 
         // 카카오 액세스 토큰을 사용하여 이메일을 가져옴
-        String email = getEmailFromKakaoAccessToken(accessToken);
+        String email = getKakaoAccountInfo(accessToken, "email");
+        String nickname = getKakaoAccountInfo(accessToken, "nickname");
         log.info("email: " + email);
+        log.info("nickname: " + nickname);
 
         // 가져온 이메일로 사용자 정보를 조회
         Optional<MemberEntity> result = memberRepository.findById(email);
@@ -57,13 +59,14 @@ public class KakaoService {
         // 생성된 회원 정보를 MemberDTO로 반환
         memberDTO.setEmail(email);
         memberDTO.setPw(pw);
+        memberDTO.setName(nickname);
         memberDTO.setProvider("kakao");
 
         return memberDTO;
     }
 
     // 카카오 액세스 토큰을 사용하여 이메일을 가져오는 비공개 메서드
-    private String getEmailFromKakaoAccessToken(String accessToken){
+    private String getKakaoAccountInfo(String accessToken, String field){
 
 
         String kakaoGetUserURL = "https://kapi.kakao.com/v2/user/me";
@@ -99,7 +102,16 @@ public class KakaoService {
         LinkedHashMap<String, String> kakaoAccount = bodyMap.get("kakao_account");
         log.info("kakaoAccount: " + kakaoAccount);
 
-        return kakaoAccount.get("email");
+        // 이메일 또는 닉네임을 추출
+        if ("email".equals(field)) {
+            return kakaoAccount.get("email");
+        } else if ("nickname".equals(field)) {
+            LinkedHashMap<String, String> properties = bodyMap.get("properties");
+            return properties.get("nickname");
+        } else {
+            throw new RuntimeException("Invalid field: " + field);
+        }
     }
+
 
 }
