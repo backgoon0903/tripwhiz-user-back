@@ -1,17 +1,17 @@
-package com.tripwhiz.tripwhizuserback;
+package com.tripwhiz.tripwhizuserback.product.repository;
 
 import com.tripwhiz.tripwhizuserback.category.domain.Category;
-import com.tripwhiz.tripwhizuserback.category.repository.CategoryRepository;
 import com.tripwhiz.tripwhizuserback.category.domain.CategoryProduct;
 import com.tripwhiz.tripwhizuserback.category.repository.CategoryProductRepository;
+import com.tripwhiz.tripwhizuserback.category.repository.CategoryRepository;
 import com.tripwhiz.tripwhizuserback.product.domain.AttachFile;
 import com.tripwhiz.tripwhizuserback.product.domain.Product;
-import com.tripwhiz.tripwhizuserback.product.repository.ProductRepository;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,9 +21,9 @@ import java.util.stream.IntStream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@SpringBootTest
+@DataJpaTest
 @Log4j2
-
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class ProductRepoTests {
 
     @Autowired
@@ -35,14 +35,22 @@ public class ProductRepoTests {
     @Autowired
     private CategoryProductRepository categoryProductRepository;
 
+    @Test
+    public void testRead() {
+
+        log.info(productRepository.read(15L));
+
+    }
+
     @BeforeEach
     @Transactional
     @Commit
     public void setUp() {
+
         // 카테고리 10개 생성 및 저장
         IntStream.rangeClosed(1, 10).forEach(i -> {
             Category category = Category.builder()
-                    .dname("카테고리 " + i)
+                    .cname("카테고리 " + i)
                     .delFlag(false)
                     .build();
             categoryRepository.save(category);
@@ -50,7 +58,7 @@ public class ProductRepoTests {
             // 각 카테고리에 연관된 프로덕트 2개 생성 및 저장
             IntStream.rangeClosed(1, 2).forEach(j -> {
                 Product product = Product.builder()
-                        .pname("상품 " + j + " in " + category.getDname())
+                        .pname("상품 " + j + " in " + category.getCname())
                         .pdesc("설명 " + j)
                         .price(1000 * j)
                         .delFlag(false)
@@ -64,7 +72,8 @@ public class ProductRepoTests {
                         .product(product)
                         .build();
                 categoryProductRepository.save(categoryProduct);
-                log.info("Inserted CategoryProduct: " + categoryProduct + " for Category: " + category.getDname() + " and Product: " + product.getPname());
+                log.info("Inserted CategoryProduct: " + categoryProduct + " for Category: " + category.getCname() + " and Product: " + product.getPname());
+
             });
         });
     }
@@ -72,6 +81,7 @@ public class ProductRepoTests {
     @Test
     @Transactional
     public void testCategoryProductInsertion() {
+
         long categoryCount = categoryRepository.count();
         long productCount = productRepository.count();
         long categoryProductCount = categoryProductRepository.count();
@@ -83,5 +93,7 @@ public class ProductRepoTests {
         log.info("Total Categories in DB: " + categoryCount);
         log.info("Total Products in DB: " + productCount);
         log.info("Total CategoryProducts in DB: " + categoryProductCount);
+
     }
+
 }

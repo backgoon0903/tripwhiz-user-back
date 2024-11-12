@@ -13,14 +13,13 @@ public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long dno;
+    private Long cno;
 
     @Column(nullable = false, length = 50)
-    private String dname;
+    private String cname;
+
+    private ParentCategory category;
 
     private boolean delFlag;
-
-//    @ManyToOne
-//    private ParentCategory parentCategory;
 
 }

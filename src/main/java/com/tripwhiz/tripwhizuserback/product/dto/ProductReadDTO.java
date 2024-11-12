@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @Builder
 @AllArgsConstructor
@@ -20,6 +19,6 @@ public class ProductReadDTO {
 
     private int price;
 
-    private String fileName;
+//    private String fileName;
 
 }
