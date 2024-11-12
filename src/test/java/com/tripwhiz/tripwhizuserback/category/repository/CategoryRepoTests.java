@@ -36,14 +36,10 @@ public class CategoryRepoTests {
 
     private final Random random = new Random();
 
-
     @Test
     public void testCategory() {
-
         log.info("------------------");
-
         log.info(categoryRepository.findByCno(1L));
-
     }
 
     @Test
@@ -60,14 +56,15 @@ public class CategoryRepoTests {
             log.info("Inserted Category: " + category);
         });
 
-        // 2. 프로덕트 100개 생성 및 저장
+        // 2. 프로덕트 100개 생성 및 동일한 이미지 파일 이름 설정하여 저장
         IntStream.rangeClosed(1, 100).forEach(i -> {
+            String fileName = "c7_m2_03.jpg";  // 동일한 파일명으로 변경
             Product product = Product.builder()
                     .pname("상품 " + i)
                     .pdesc("설명 " + i)
                     .price(1000 * i)
                     .delFlag(false)
-                    .attachFiles(Set.of(new AttachFile(0, "file" + i + ".jpg")))
+                    .attachFiles(Set.of(new AttachFile(0, fileName))) // 파일명을 고정
                     .build();
             productRepository.save(product);
             log.info("Inserted Product: " + product);
@@ -104,5 +101,4 @@ public class CategoryRepoTests {
         log.info("Total Products in DB: " + productCount);
         log.info("Total CategoryProduct entries in DB: " + categoryProductCount);
     }
-
 }
