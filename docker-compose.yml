@@ -1,0 +1,8 @@
+services:
+  nginx:
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - "C:/zzz/upload:/uploads"                # 호스트의 uploads 디렉토리를 컨테이너의 /uploads에 마운트
+      - "C:/zzz/tripwhiz-user-back/nginx/nginx.conf:/etc/nginx/nginx.conf"  # Nginx 설정 파일을 컨테이너에 마운트
