@@ -12,7 +12,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@ToString(exclude = {"attachFiles"})
+@ToString
 @Table(name = "product")
 public class Product {
 
