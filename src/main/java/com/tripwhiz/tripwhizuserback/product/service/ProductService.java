@@ -23,12 +23,12 @@ public class ProductService {
 
     private final CustomFileUtil customFileUtil;
 
-    public PageResponseDTO<ProductListDTO> list(PageRequestDTO pageRequestDTO, Long dno) {
+    public PageResponseDTO<ProductListDTO> list(PageRequestDTO pageRequestDTO) {
 
         log.info("2------------------------------");
-        log.info(productRepository.listByDno(dno,pageRequestDTO));
+        log.info(productRepository.listByCno(pageRequestDTO));
 
-        return productRepository.listByDno(dno,pageRequestDTO);
+        return productRepository.listByCno(pageRequestDTO);
     }
 
     public Optional<ProductReadDTO> getProductById(Long pno) {
