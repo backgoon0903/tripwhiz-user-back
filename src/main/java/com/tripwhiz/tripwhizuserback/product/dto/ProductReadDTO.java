@@ -19,6 +19,6 @@ public class ProductReadDTO {
 
     private int price;
 
-    private String fileName;
+//    private String fileName;
 
 }
