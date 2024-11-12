@@ -18,6 +18,9 @@ public class Category {
     @Column(nullable = false, length = 50)
     private String cname;
 
+    @Column(nullable = false)
+    private String theme;
+
     private ParentCategory category;
 
     private boolean delFlag;
