@@ -5,7 +5,9 @@ import com.querydsl.jpa.JPQLQuery;
 import com.tripwhiz.tripwhizuserback.category.domain.QCategoryProduct;
 import com.tripwhiz.tripwhizuserback.common.dto.PageRequestDTO;
 import com.tripwhiz.tripwhizuserback.common.dto.PageResponseDTO;
+import com.tripwhiz.tripwhizuserback.product.domain.Image;
 import com.tripwhiz.tripwhizuserback.product.domain.Product;
+import com.tripwhiz.tripwhizuserback.product.domain.QImage;
 import com.tripwhiz.tripwhizuserback.product.domain.QProduct;
 import com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO;
 import lombok.extern.log4j.Log4j2;
@@ -31,9 +33,12 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         log.info("-------------------list-----------");
 
         QProduct product = QProduct.product;
+        QImage image = QImage.image;
 
         JPQLQuery<Product> query = from(product);
+        query.leftJoin(product.images, image);
 
+        query.where(image.ord.eq(0));
         query.groupBy(product);
 
         // 페이징 및 정렬 처리
@@ -41,7 +46,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         JPQLQuery<Tuple> tupleQuery = query.select(
                 product,
-                product.fileUrl // fileUrl을 직접 가져옴
+                image.filename
         );
 
         tupleQuery.fetch();
@@ -62,11 +67,14 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         );
 
         QProduct product = QProduct.product;
+        QImage image  = QImage.image;
         QCategoryProduct categoryProduct = QCategoryProduct.categoryProduct;
 
         JPQLQuery<Product> query = from(product);
         query.leftJoin(categoryProduct).on(categoryProduct.product.eq(product));
+        query.leftJoin(product.images, image);
 
+        query.where(image.ord.eq(0));
         if (cno != null) {
             query.where(product.category.cno.eq(cno));
         }
@@ -128,7 +136,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         JPQLQuery<Tuple> tupleQuery = query.select(
                 product,
-                product.fileUrl,
+                image.filename,
                 product.count()
         );
 
@@ -137,15 +145,18 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
             return null;
         }
 
-        List<ProductListDTO> dtoList = tupleList.stream().map(t -> {
-            Product productObj = t.get(product);
-            String fileUrl = t.get(product.fileUrl);
+        List<ProductListDTO> dtoList = new ArrayList<>();
 
-            return ProductListDTO.builder()
+        tupleList.forEach(t -> {
+            Product productObj = t.get(product); // QProduct에서 Product 객체 직접 추출
+            String fileName = t.get(image.filename);
+            Long count = t.get(product.count()); // count 값 추출
+
+            ProductListDTO dto = ProductListDTO.builder()
                     .pno(productObj.getPno())
                     .pname(productObj.getPname())
                     .price(productObj.getPrice())
-                    .fileUrl(fileUrl)
+                    .fileName(fileName)
                     .build();
         }).collect(Collectors.toList());
 
@@ -208,4 +219,5 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
                 .pageRequestDTO(pageRequestDTO)
                 .build();
     }
+
 }

@@ -6,6 +6,9 @@ import com.tripwhiz.tripwhizuserback.category.domain.ThemeCategory;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Builder
 @AllArgsConstructor
@@ -27,10 +30,13 @@ public class Product {
 
     private int price;
 
-    // 외부 파일 URL을 저장하는 필드
-    private String fileUrl;
 
     private boolean delFlag;
+
+    // Image 컬렉션을 List로 변경하고 정렬 인덱스 추가
+    @ElementCollection
+    @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
+    private List<Image> images = new ArrayList<>();
 
     // 상위 카테고리와의 관계 설정
     @ManyToOne(fetch = FetchType.LAZY)
@@ -51,9 +57,12 @@ public class Product {
         this.delFlag = newDelFlag;
     }
 
-    // 파일 URL 설정 메서드
-    public void setFileUrl(String fileUrl) {
-        this.fileUrl = fileUrl;
+    public void addImage(String filename, String imageUrl) {
+        images.add(new Image(images.size(), filename, imageUrl));  // ord 필드 설정
+    }
+
+    public void clearImages() {
+        images.clear();
     }
 
     // 상위 카테고리 설정 메서드
@@ -64,7 +73,7 @@ public class Product {
     // 하위 카테고리 설정 메서드
     public void setSubCategory(SubCategory subCategory) {
         this.subCategory = subCategory;
-    }
+        }
 
     // 테마 카테고리 설정 메서드
     public void setThemeCategory(ThemeCategory themeCategory) {

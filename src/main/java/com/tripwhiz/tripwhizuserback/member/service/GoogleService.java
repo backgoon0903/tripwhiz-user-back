@@ -46,6 +46,9 @@ public class GoogleService {
             memberEntity = result.get();
             memberDTO.setEmail(memberEntity.getEmail());
             memberDTO.setPw(memberEntity.getPw());
+            memberDTO.setName(memberEntity.getName());
+            memberDTO.setProvider(memberEntity.getProvider());
+
             return memberDTO;
         }
         // 회원이 존재하지 않으면, 새로운 회원을 생성
@@ -53,6 +56,8 @@ public class GoogleService {
         MemberEntity newMember = MemberEntity.builder()
                 .email(email)
                 .pw(pw)
+                .name(name)
+                .provider("google")
                 .build();
         memberRepository.save(newMember); // 새로운 회원을 데이터베이스에 저장
 
