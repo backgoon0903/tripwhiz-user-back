@@ -21,4 +21,13 @@ public class PageRequestDTO {
     @Min(value = 10, message = "set over 10")
     @Max(value = 100, message = "cannot over 100")
     private int size = 10;
+
+    // 상위 카테고리 ID (예: cno)
+    private Long categoryCno;
+
+    // 하위 카테고리 ID (예: scno)
+    private Long subCategoryScno;
+
+    // 테마 카테고리 (ThemeCategory enum 값의 문자열 표현)
+    private String themeCategory;
 }

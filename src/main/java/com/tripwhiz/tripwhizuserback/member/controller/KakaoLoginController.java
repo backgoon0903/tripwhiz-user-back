@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/member")
+@RequestMapping("/api/member")
 @Log4j2
 @RequiredArgsConstructor
 public class KakaoLoginController {
@@ -62,6 +62,7 @@ public class KakaoLoginController {
         tokenResponseDTO.setAccessToken(generatedAccessToken);
         tokenResponseDTO.setRefreshToken(refreshToken);
         tokenResponseDTO.setEmail(memberDTO.getEmail());
+        tokenResponseDTO.setName(memberDTO.getName());
 
 
         return ResponseEntity.ok(tokenResponseDTO);
@@ -94,11 +95,13 @@ public class KakaoLoginController {
 
             // 유효한 경우 이메일 정보를 가져와 응답에 포함
             String email = payload.get("email").toString();
+            String name = payload.get("name").toString();
 
             TokenResponseDTO tokenResponseDTO = new TokenResponseDTO();
             tokenResponseDTO.setAccessToken(accessTokenStr);
             tokenResponseDTO.setEmail(email);
             tokenResponseDTO.setRefreshToken(refreshToken);
+            tokenResponseDTO.setName(name);
 
             return ResponseEntity.ok(tokenResponseDTO);
 
@@ -109,6 +112,7 @@ public class KakaoLoginController {
             try{
                 Map<String, Object> payload = jwtUtil.validateToken(refreshToken);
                 String email = payload.get("email").toString();
+                String name = payload.get("name").toString();
                 String newAccessToken = null;
                 String newRefreshToken = null;
 
@@ -123,6 +127,7 @@ public class KakaoLoginController {
                 tokenResponseDTO.setAccessToken(newAccessToken);
                 tokenResponseDTO.setRefreshToken(newRefreshToken);
                 tokenResponseDTO.setEmail(email);
+                tokenResponseDTO.setName(name);
 
                 return ResponseEntity.ok(new TokenResponseDTO());
 

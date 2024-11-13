@@ -12,15 +12,36 @@ import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long>, ProductSearch {
 
+    // 특정 상품을 ProductReadDTO 형태로 조회
     @Query("select " +
-            "new com.tripwhiz.tripwhizuserback.product.dto.ProductReadDTO(p.pno, p.pname, p.pdesc, p.price) " +
-            "from Product p where p.pno = :pno")
+            "new com.tripwhiz.tripwhizuserback.product.dto.ProductReadDTO(p.pno, p.pname, p.pdesc, p.price, p.fileUrl, " +
+            "p.category.cno, p.subCategory.scno, p.themeCategory, i.filename) " + // 파일명 추가
+            "from Product p " +
+            "left join p.images i on i.ord = 0 " + // 대표 이미지를 가져오기 위해 ord = 0인 이미지와 조인
+            "where p.pno = :pno")
     Optional<ProductReadDTO> read(@Param("pno") Long pno);
 
+    // 특정 상품의 CategoryProduct 정보를 조회
     @Query("select cp from CategoryProduct cp " +
             "join fetch cp.product p " +
             "join fetch cp.category c " +
             "where p.pno = :pno")
     Optional<CategoryProduct> findCategory(@Param("pno") Long pno);
 
+    // 상위 카테고리를 기준으로 상품 조회
+    @Query("select p from Product p " +
+            "join p.category c " +
+            "where c.cno = :cno")
+    Optional<Product> findByCategoryCno(@Param("cno") Long cno);
+
+    // 하위 카테고리를 기준으로 상품 조회
+    @Query("select p from Product p " +
+            "join p.subCategory sc " +
+            "where sc.scno = :scno")
+    Optional<Product> findBySubCategoryScno(@Param("scno") Long scno);
+
+    // 테마 카테고리를 기준으로 상품 조회
+    @Query("select p from Product p " +
+            "where p.themeCategory = :themeCategory")
+    Optional<Product> findByThemeCategory(@Param("themeCategory") String themeCategory);
 }

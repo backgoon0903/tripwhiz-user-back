@@ -24,6 +24,6 @@ public class Category {
     private boolean delFlag;
 
     @Builder.Default
-    private ThemeCategory themeCategory = ThemeCategory.휴양;
+    private ThemeCategory themeCategory = ThemeCategory.RELAXATION;
 
 }
