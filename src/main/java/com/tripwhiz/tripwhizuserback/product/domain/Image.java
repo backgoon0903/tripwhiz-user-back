@@ -1,21 +1,24 @@
 package com.tripwhiz.tripwhizuserback.product.domain;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
-import jakarta.persistence.*;
-
-@Embeddable
+@Entity
 public class Image {
 
     @Id
-    private Long fid;  // 기존 id를 fid로 변경
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long fid;  // 고유 ID 필드로 설정
 
-    private String file;  // 기존 filename을 file로 변경
-    private String imageUrl;
+    private String file;  // 파일명
+    private String imageUrl;  // 이미지 URL
 
     // 기본 생성자
     public Image() {}
 
-    // file과 imageUrl을 받는 생성자 추가
+    // file과 imageUrl을 받는 생성자
     public Image(String file, String imageUrl) {
         this.file = file;
         this.imageUrl = imageUrl;

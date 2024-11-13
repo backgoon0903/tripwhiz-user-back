@@ -6,7 +6,7 @@ import com.tripwhiz.tripwhizuserback.category.domain.QCategoryProduct;
 import com.tripwhiz.tripwhizuserback.common.dto.PageRequestDTO;
 import com.tripwhiz.tripwhizuserback.common.dto.PageResponseDTO;
 import com.tripwhiz.tripwhizuserback.product.domain.Product;
-import com.tripwhiz.tripwhizuserback.product.domain.QImage;
+import com.tripwhiz.tripwhizuserback.product.domain.QAttachFile;
 import com.tripwhiz.tripwhizuserback.product.domain.QProduct;
 import com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO;
 import lombok.extern.log4j.Log4j2;
@@ -32,12 +32,12 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         log.info("-------------------list-----------");
 
         QProduct product = QProduct.product;
-        QImage image = QImage.image;
+        QAttachFile attachFile = QAttachFile.attachFile;
 
         JPQLQuery<Product> query = from(product);
-        query.leftJoin(product.images, image);
+        query.leftJoin(product.attachFiles, attachFile);
 
-        query.where(image.fid.eq(0));
+        query.where(attachFile.ord.eq(0));
         query.groupBy(product);
 
         // 페이징 및 정렬 처리
