@@ -73,7 +73,7 @@ public class Product {
     // 하위 카테고리 설정 메서드
     public void setSubCategory(SubCategory subCategory) {
         this.subCategory = subCategory;
-        }
+    }
 
     // 테마 카테고리 설정 메서드
     public void setThemeCategory(ThemeCategory themeCategory) {
