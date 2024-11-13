@@ -16,4 +16,8 @@ public class MemberEntity {
     private String email;
 
     private String pw;
+
+    private String name;
+
+    private String provider;
 }

@@ -45,6 +45,9 @@ public class KakaoService {
             memberEntity = result.get();
             memberDTO.setEmail(memberEntity.getEmail());
             memberDTO.setPw(memberEntity.getPw());
+            memberDTO.setName(memberEntity.getName());
+            memberDTO.setProvider(memberEntity.getProvider());
+
             return memberDTO;
         }
 
@@ -53,6 +56,8 @@ public class KakaoService {
         MemberEntity newMember = MemberEntity.builder()
                 .email(email)
                 .pw(pw)
+                .name(nickname)
+                .provider("kakao")
                 .build();
         memberRepository.save(newMember); // 새로운 회원을 데이터베이스에 저장
 
