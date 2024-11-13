@@ -30,7 +30,7 @@ public class Product {
 
     @ElementCollection
     @Builder.Default
-    private Set<AttachFile> attachFiles = new HashSet<>();
+    private Set<Image> images = new HashSet<>();
 
     private boolean delFlag;
 
@@ -38,12 +38,5 @@ public class Product {
         this.delFlag = newDelFlag;
     }
 
-    public void addFile(String filename){
-        attachFiles.add(new AttachFile(attachFiles.size(), filename));
-    }
-
-    public void clearFiles(){
-        attachFiles.clear();
-    }
 
 }

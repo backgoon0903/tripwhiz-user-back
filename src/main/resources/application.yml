@@ -3,9 +3,9 @@ spring:
     name: tripwhiz-user-back
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://10.10.10.215:13306/tripwhiz
-    username: debugger
-    password: debugger
+    url: jdbc:mariadb://localhost:13306/testdb
+    username: mjh
+    password: mjh
 
     hikari:
       minimum-idle: 2

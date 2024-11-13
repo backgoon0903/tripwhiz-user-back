@@ -17,6 +17,6 @@ public class ProductListDTO {
 
     private int price;
 
-    private String fileName;
+    private String file;
 
 }
