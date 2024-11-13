@@ -2,24 +2,22 @@ package com.tripwhiz.tripwhizuserback.category.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import com.tripwhiz.tripwhizuserback.product.domain.Product;
 
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@ToString(exclude = {"product","category"})
-public class CategoryProduct {
-
+@ToString
+public class SubCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long cpno;
+    private Long scno;
+
+    @Column(nullable = false)
+    private String sname;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Product product;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cno")
     private Category category;
-
 }
