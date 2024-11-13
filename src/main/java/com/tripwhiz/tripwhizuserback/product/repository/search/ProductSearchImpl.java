@@ -37,7 +37,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         JPQLQuery<Product> query = from(product);
         query.leftJoin(product.images, image);
 
-        query.where(image.ord.eq(0));
+        query.where(image.fid.eq(0));
         query.groupBy(product);
 
         // 페이징 및 정렬 처리
@@ -45,7 +45,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         JPQLQuery<Tuple> tupleQuery = query.select(
                 product,
-                image.file
+                attachFile.filename
         );
 
         tupleQuery.fetch();
@@ -61,14 +61,14 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         );
 
         QProduct product = QProduct.product;
-        QImage image = QImage.image;
+        QAttachFile attachFile = QAttachFile.attachFile;
         QCategoryProduct categoryProduct = QCategoryProduct.categoryProduct;
 
         JPQLQuery<Product> query = from(product);
         query.leftJoin(categoryProduct).on(categoryProduct.product.eq(product));
-        query.leftJoin(product.images, image);
+        query.leftJoin(product.attachFiles, attachFile);
 
-        query.where(image.ord.eq(0));
+        query.where(attachFile.ord.eq(0));
         query.groupBy(product);
 
         // 페이징 및 정렬 처리
@@ -77,7 +77,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         // 쿼리 수정: count()를 추가하여 총 개수와 파일명 가져오기
         JPQLQuery<Tuple> tupleQuery = query.select(
                 product,
-                image.file,
+                attachFile.filename,
                 product.count()
         );
 
@@ -92,14 +92,14 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         tupleList.forEach(t -> {
             Product productObj = t.get(product); // QProduct에서 Product 객체 직접 추출
-            String fileName = t.get(image.file);
+            String fileName = t.get(attachFile.filename);
             Long count = t.get(product.count()); // count 값 추출
 
             ProductListDTO dto = ProductListDTO.builder()
                     .pno(productObj.getPno())
                     .pname(productObj.getPname())
                     .price(productObj.getPrice())
-                    .file(fileName)
+                    .fileName(fileName)
                     .build();
 
             dtoList.add(dto);
