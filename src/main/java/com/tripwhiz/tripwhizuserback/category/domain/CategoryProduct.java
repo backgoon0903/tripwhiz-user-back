@@ -16,10 +16,10 @@ public class CategoryProduct {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cpno;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Category category;
 
 }
