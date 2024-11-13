@@ -10,17 +10,16 @@ public class ImageController {
 
     private final ImageService imageService;
 
-    // 생성자 주입 방식 사용
     public ImageController(ImageService imageService) {
         this.imageService = imageService;
     }
 
-    // 디렉토리의 이미지를 데이터베이스에 저장하는 엔드포인트
-    @GetMapping("/save")
-    public ResponseEntity<String> saveImages() {
+    // 디렉토리의 이미지를 특정 Product에 저장하는 엔드포인트
+    @PostMapping("/save")  // @PostMapping으로 변경
+    public ResponseEntity<String> saveImages(@RequestParam Long productId) {
         try {
             String path = "C:\\zzz\\upload";
-            imageService.saveImagesWithUrl(path);  // 받은 경로로 이미지 저장
+            imageService.saveImagesWithUrl(path, productId);  // 경로와 productId를 전달
             return ResponseEntity.ok("Images saved successfully!");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Failed to save images: " + e.getMessage());

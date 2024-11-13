@@ -5,8 +5,9 @@ import com.querydsl.jpa.JPQLQuery;
 import com.tripwhiz.tripwhizuserback.category.domain.QCategoryProduct;
 import com.tripwhiz.tripwhizuserback.common.dto.PageRequestDTO;
 import com.tripwhiz.tripwhizuserback.common.dto.PageResponseDTO;
+import com.tripwhiz.tripwhizuserback.product.domain.Image;
 import com.tripwhiz.tripwhizuserback.product.domain.Product;
-import com.tripwhiz.tripwhizuserback.product.domain.QAttachFile;
+import com.tripwhiz.tripwhizuserback.product.domain.QImage;
 import com.tripwhiz.tripwhizuserback.product.domain.QProduct;
 import com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO;
 import lombok.extern.log4j.Log4j2;
@@ -32,12 +33,12 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         log.info("-------------------list-----------");
 
         QProduct product = QProduct.product;
-        QAttachFile attachFile = QAttachFile.attachFile;
+        QImage image = QImage.image;
 
         JPQLQuery<Product> query = from(product);
-        query.leftJoin(product.attachFiles, attachFile);
+        query.leftJoin(product.images, image);
 
-        query.where(attachFile.ord.eq(0));
+        query.where(image.ord.eq(0));
         query.groupBy(product);
 
         // 페이징 및 정렬 처리
@@ -45,7 +46,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         JPQLQuery<Tuple> tupleQuery = query.select(
                 product,
-                attachFile.filename
+                image.filename
         );
 
         tupleQuery.fetch();
@@ -61,14 +62,14 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         );
 
         QProduct product = QProduct.product;
-        QAttachFile attachFile = QAttachFile.attachFile;
+        QImage image  = QImage.image;
         QCategoryProduct categoryProduct = QCategoryProduct.categoryProduct;
 
         JPQLQuery<Product> query = from(product);
         query.leftJoin(categoryProduct).on(categoryProduct.product.eq(product));
-        query.leftJoin(product.attachFiles, attachFile);
+        query.leftJoin(product.images, image);
 
-        query.where(attachFile.ord.eq(0));
+        query.where(image.ord.eq(0));
         query.groupBy(product);
 
         // 페이징 및 정렬 처리
@@ -77,7 +78,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         // 쿼리 수정: count()를 추가하여 총 개수와 파일명 가져오기
         JPQLQuery<Tuple> tupleQuery = query.select(
                 product,
-                attachFile.filename,
+                image.filename,
                 product.count()
         );
 
@@ -92,7 +93,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         tupleList.forEach(t -> {
             Product productObj = t.get(product); // QProduct에서 Product 객체 직접 추출
-            String fileName = t.get(attachFile.filename);
+            String fileName = t.get(image.filename);
             Long count = t.get(product.count()); // count 값 추출
 
             ProductListDTO dto = ProductListDTO.builder()
