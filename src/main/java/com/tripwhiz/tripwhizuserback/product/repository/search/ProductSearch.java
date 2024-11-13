@@ -14,4 +14,14 @@ public interface ProductSearch {
 
     PageResponseDTO<ProductListDTO> listByCno(PageRequestDTO pageRequestDTO);
 
+    // 상위 카테고리 cno로 상품 목록 조회
+    PageResponseDTO<ProductListDTO> listByCategory(Long cno, PageRequestDTO pageRequestDTO);
+
+    // 하위 카테고리 scno로 상품 목록 조회
+    PageResponseDTO<ProductListDTO> listBySubCategory(Long scno, PageRequestDTO pageRequestDTO);
+
+    // 테마 카테고리(ThemeCategory enum 값)로 상품 목록 조회
+    PageResponseDTO<ProductListDTO> listByTheme(String themeCategory, PageRequestDTO pageRequestDTO);
 }
+
+

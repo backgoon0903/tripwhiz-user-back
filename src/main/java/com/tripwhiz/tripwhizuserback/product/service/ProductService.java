@@ -20,40 +20,47 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
-
     private final CustomFileUtil customFileUtil;
 
+    // 기본 상품 목록 조회
     public PageResponseDTO<ProductListDTO> list(PageRequestDTO pageRequestDTO) {
-
-        log.info("2------------------------------");
-        log.info(productRepository.listByCno(pageRequestDTO));
-
+        log.info("Fetching product list with pagination");
         return productRepository.listByCno(pageRequestDTO);
     }
 
+    // 상품 ID로 단일 상품 조회
     public Optional<ProductReadDTO> getProductById(Long pno) {
-
         return productRepository.read(pno);
-
     }
 
-//    // 상품 정보와 이미지를 함께 조회하는 메서드
-//    public Optional<ProductReadDTO> getProductWithImage(Long pno) {
-//        // 상품 정보 조회
-//        Optional<ProductReadDTO> productOptional = productRepository.read(pno);
-//
-//        // 상품이 존재할 경우 파일 조회 수행
-//        return productOptional.map(product -> {
-//            // 파일명으로 이미지 조회
-//            if (product.getFileName() != null) {
-//                ResponseEntity<Resource> image = customFileUtil.getFile(product.getFileName());
-//                // 여기에서 필요한 경우 image 정보를 추가하거나 처리할 수 있음
-//                log.info("Image retrieved for product: {}", product.getFileName());
-//            }
-//            return product;
-//        });
-//    }
+    // 상위 카테고리(cno)로 상품 목록 조회
+    public PageResponseDTO<ProductListDTO> listByCategory(Long cno, PageRequestDTO pageRequestDTO) {
+        log.info("Fetching product list by category ID (cno): {}", cno);
+        return productRepository.listByCategory(cno, pageRequestDTO);
+    }
 
+    // 하위 카테고리(scno)로 상품 목록 조회
+    public PageResponseDTO<ProductListDTO> listBySubCategory(Long scno, PageRequestDTO pageRequestDTO) {
+        log.info("Fetching product list by sub-category ID (scno): {}", scno);
+        return productRepository.listBySubCategory(scno, pageRequestDTO);
+    }
 
+    // 테마 카테고리로 상품 목록 조회
+    public PageResponseDTO<ProductListDTO> listByTheme(String themeCategory, PageRequestDTO pageRequestDTO) {
+        log.info("Fetching product list by theme category: {}", themeCategory);
+        return productRepository.listByTheme(themeCategory, pageRequestDTO);
+    }
 
+    // 상품 정보와 이미지를 함께 조회
+    public Optional<ProductReadDTO> getProductWithImage(Long pno) {
+        Optional<ProductReadDTO> productOptional = productRepository.read(pno);
+
+        return productOptional.map(product -> {
+            if (product.getFileUrl() != null) {
+                customFileUtil.getFile(product.getFileUrl());
+                log.info("Image retrieved for product: {}", product.getFileUrl());
+            }
+            return product;
+        });
+    }
 }
