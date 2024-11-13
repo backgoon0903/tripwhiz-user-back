@@ -35,12 +35,7 @@ public class ProductRepoTests {
     @Autowired
     private CategoryProductRepository categoryProductRepository;
 
-    @Test
-    public void testRead() {
-
-        log.info(productRepository.read(15L));
-
-    }
+    private static final String IMAGE_BASE_URL = "http://localhost:8080/uploads/";
 
     @BeforeEach
     @Transactional
@@ -57,12 +52,13 @@ public class ProductRepoTests {
 
             // 각 카테고리에 연관된 프로덕트 2개 생성 및 저장
             IntStream.rangeClosed(1, 2).forEach(j -> {
+                String fileName = "file" + j + ".jpg";
                 Product product = Product.builder()
                         .pname("상품 " + j + " in " + category.getCname())
                         .pdesc("설명 " + j)
                         .price(1000 * j)
                         .delFlag(false)
-                        .attachFiles(new HashSet<>(Set.of(new AttachFile(0, "file" + j + ".jpg"))))
+                        .attachFiles(new HashSet<>(Set.of(new AttachFile(0, IMAGE_BASE_URL + fileName))))
                         .build();
                 productRepository.save(product);
 
@@ -73,9 +69,13 @@ public class ProductRepoTests {
                         .build();
                 categoryProductRepository.save(categoryProduct);
                 log.info("Inserted CategoryProduct: " + categoryProduct + " for Category: " + category.getCname() + " and Product: " + product.getPname());
-
             });
         });
+    }
+
+    @Test
+    public void testRead() {
+        log.info(productRepository.read(15L));
     }
 
     @Test
@@ -93,7 +93,5 @@ public class ProductRepoTests {
         log.info("Total Categories in DB: " + categoryCount);
         log.info("Total Products in DB: " + productCount);
         log.info("Total CategoryProducts in DB: " + categoryProductCount);
-
     }
-
 }

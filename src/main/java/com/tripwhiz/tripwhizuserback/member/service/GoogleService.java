@@ -29,8 +29,12 @@ public class GoogleService {
         log.info("---------authGoogle--------");
 
         // 구글 액세스 토큰을 사용하여 이메일을 가져옴
-        String email = getEmailGoogleAccessToken(accessToken);
+        String email = getGoogleAccountInfo(accessToken, "email");
         log.info("email: " + email);
+
+        // 구글 액세스 토큰을 사용하여 이름을 가져옴
+        String name = getGoogleAccountInfo(accessToken, "name");
+        log.info("name: " + name);
 
         // 가져온 이메일로 사용자 정보를 조회
         Optional<MemberEntity> result = memberRepository.findById(email);
@@ -55,13 +59,14 @@ public class GoogleService {
         // 생성된 회원 정보를 MemberDTO로 반환
         memberDTO.setEmail(email);
         memberDTO.setPw(pw);
+        memberDTO.setName(name);
         memberDTO.setProvider("google");
 
         return memberDTO;
     }
 
     // 구글 액세스 토큰을 사용하여 이메일을 가져오는 비공개 메서드
-    private String getEmailGoogleAccessToken(String accessToken) {
+    private String getGoogleAccountInfo(String accessToken, String field) {
 
         String googleUserInfoURL = "https://www.googleapis.com/oauth2/v3/userinfo";
 
@@ -89,16 +94,16 @@ public class GoogleService {
             // 응답 로그 출력
             log.info("Google API Response: {}", payload);
 
-            // 이메일을 추출하고, 로그로 확인
-            String email = (String) payload.get("email");
-            log.info("Extracted Email: {}", email);
+            // 필요한 필드를 추출하고, 로그로 확인
+            String result = (String) payload.get(field);
+            log.info("Extracted {}: {}", field, result);
 
-            // 이메일이 없다면 에러를 던짐
-            if (email == null || email.isEmpty()) {
-                throw new RuntimeException("No email found in Google API response");
+            // 이메일 또는 이름이 없다면 에러를 던짐
+            if (result == null || result.isEmpty()) {
+                throw new RuntimeException("No " + field + " found in Google API response");
             }
-            return email;
-//            return payload; // 전체 사용자 정보 반환
+            return result;
+
 
         } catch (HttpClientErrorException e) {
             log.error("Error during Google API request: {}", e.getStatusCode());

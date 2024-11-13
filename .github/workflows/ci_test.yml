@@ -51,3 +51,4 @@ jobs:
         run: docker push sungohjin/tripwhiz_back_image:latest
 
 
+
