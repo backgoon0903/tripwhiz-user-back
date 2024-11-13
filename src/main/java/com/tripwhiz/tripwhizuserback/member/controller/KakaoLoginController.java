@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/member")
+@RequestMapping("/api/member")
 @Log4j2
 @RequiredArgsConstructor
 public class KakaoLoginController {

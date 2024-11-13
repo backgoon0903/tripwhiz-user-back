@@ -14,8 +14,10 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
 
     // 특정 상품을 ProductReadDTO 형태로 조회
     @Query("select " +
-            "new com.tripwhiz.tripwhizuserback.product.dto.ProductReadDTO(p.pno, p.pname, p.pdesc, p.price, p.fileUrl, p.category.cno, p.subCategory.scno, p.themeCategory) " +
+            "new com.tripwhiz.tripwhizuserback.product.dto.ProductReadDTO(p.pno, p.pname, p.pdesc, p.price, p.fileUrl, " +
+            "p.category.cno, p.subCategory.scno, p.themeCategory, i.filename) " + // 파일명 추가
             "from Product p " +
+            "left join p.images i on i.ord = 0 " + // 대표 이미지를 가져오기 위해 ord = 0인 이미지와 조인
             "where p.pno = :pno")
     Optional<ProductReadDTO> read(@Param("pno") Long pno);
 

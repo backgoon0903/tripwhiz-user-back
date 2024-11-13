@@ -20,4 +20,5 @@ public class ProductReadDTO {
     private Long categoryCno;        // 상위 카테고리 ID
     private Long subCategoryScno;    // 하위 카테고리 ID
     private ThemeCategory themeCategory; // 테마 카테고리
+    private String fileName;
 }

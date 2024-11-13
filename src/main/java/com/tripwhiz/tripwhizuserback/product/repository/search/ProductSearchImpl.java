@@ -5,7 +5,6 @@ import com.querydsl.jpa.JPQLQuery;
 import com.tripwhiz.tripwhizuserback.category.domain.QCategoryProduct;
 import com.tripwhiz.tripwhizuserback.common.dto.PageRequestDTO;
 import com.tripwhiz.tripwhizuserback.common.dto.PageResponseDTO;
-import com.tripwhiz.tripwhizuserback.product.domain.Image;
 import com.tripwhiz.tripwhizuserback.product.domain.Product;
 import com.tripwhiz.tripwhizuserback.product.domain.QImage;
 import com.tripwhiz.tripwhizuserback.product.domain.QProduct;
@@ -69,7 +68,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         );
 
         QProduct product = QProduct.product;
-        QImage image  = QImage.image;
+        QImage image = QImage.image;
         QCategoryProduct categoryProduct = QCategoryProduct.categoryProduct;
 
         JPQLQuery<Product> query = from(product);
@@ -126,6 +125,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         );
 
         QProduct product = QProduct.product;
+        QImage image = QImage.image;
         JPQLQuery<Product> query = from(product);
 
         if (scno != null) {
@@ -161,9 +161,11 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
                     .pno(productObj.getPno())
                     .pname(productObj.getPname())
                     .price(productObj.getPrice())
-                    .fileName(fileName)
+                    .fileUrl(fileName)
                     .build();
-        }).collect(Collectors.toList());
+
+            dtoList.add(dto); // dtoList에 추가
+        });
 
         long total = tupleQuery.fetchCount();
 
