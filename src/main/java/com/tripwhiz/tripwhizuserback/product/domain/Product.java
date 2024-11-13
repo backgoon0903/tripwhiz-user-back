@@ -1,11 +1,10 @@
 package com.tripwhiz.tripwhizuserback.product.domain;
 
-//import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Builder
@@ -28,22 +27,22 @@ public class Product {
 
     private int price;
 
-    @ElementCollection
-    @Builder.Default
-    private Set<AttachFile> attachFiles = new HashSet<>();
-
     private boolean delFlag;
+
+    // Image 컬렉션을 List로 변경하고 정렬 인덱스 추가
+    @ElementCollection
+    @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
+    private List<Image> images = new ArrayList<>();
 
     public void changeDelFlag(boolean newDelFlag) {
         this.delFlag = newDelFlag;
     }
 
-    public void addFile(String filename){
-        attachFiles.add(new AttachFile(attachFiles.size(), filename));
+    public void addImage(String filename, String imageUrl) {
+        images.add(new Image(images.size(), filename, imageUrl));  // ord 필드 설정
     }
 
-    public void clearFiles(){
-        attachFiles.clear();
+    public void clearImages() {
+        images.clear();
     }
-
 }
