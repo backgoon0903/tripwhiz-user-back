@@ -18,5 +18,6 @@ public class ProductListDTO {
     private String fileUrl;        // 외부 파일 URL
     private Long categoryCno;      // 상위 카테고리 ID
     private Long subCategoryScno;  // 하위 카테고리 ID
-    private ThemeCategory themeCategory; // 테마 카테고리
+    private ThemeCategory themeCategory;// 테마 카테고리
+    private String fileName;
 }

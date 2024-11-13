@@ -52,6 +52,8 @@ public class Product {
     @Enumerated(EnumType.STRING) // Enum 값을 데이터베이스에 문자열로 저장
     private ThemeCategory themeCategory;
 
+    private String fileUrl;
+
     // 삭제 상태 변경 메서드
     public void changeDelFlag(boolean newDelFlag) {
         this.delFlag = newDelFlag;
