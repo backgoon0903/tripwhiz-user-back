@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.util.Arrays;
 
+
 @Service
 public class ImageService {
 
@@ -21,7 +22,6 @@ public class ImageService {
 
     private static final String BASE_URL = "http://localhost/images/";
 
-    // 지정된 경로에서 파일명을 읽어와 URL을 생성하고 DB에 저장
     @Transactional
     public void saveImagesWithUrl(String directoryPath) {
         logger.info("Starting to save images from directory: {}", directoryPath);
@@ -35,9 +35,9 @@ public class ImageService {
                 Arrays.stream(files)
                         .filter(File::isFile)
                         .forEach(file -> {
-                            String fileName = file.getName(); // c2_m1_02.jpg       xx
-                            String imageUrl = fileName;  // URL 생성
-                            Image image = new Image(fileName, imageUrl);
+                            String fileName = file.getName(); // 파일 이름 추출
+                            String imageUrl = BASE_URL + fileName; // 전체 URL 생성
+                            Image image = new Image(fileName, imageUrl); // 파일 이름과 URL로 Image 객체 생성
 
                             // 이미지 데이터베이스에 저장
                             imageRepository.save(image);
