@@ -16,10 +16,10 @@ public class ImageController {
 
     // 디렉토리의 이미지를 특정 Product에 저장하는 엔드포인트
     @PostMapping("/save")  // @PostMapping으로 변경
-    public ResponseEntity<String> saveImages(@RequestParam Long productId) {
+    public ResponseEntity<String> saveImages(@RequestParam Long pno) {
         try {
             String path = "C:\\zzz\\upload";
-            imageService.saveImagesWithUrl(path, productId);  // 경로와 productId를 전달
+            imageService.saveImagesWithUrl(path, pno);  // 경로와 productId를 전달
             return ResponseEntity.ok("Images saved successfully!");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Failed to save images: " + e.getMessage());
