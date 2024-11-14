@@ -35,7 +35,7 @@ public class Product {
 
     // Image 컬렉션을 List로 변경하고 정렬 인덱스 추가
     @ElementCollection
-    @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
+    @CollectionTable(name = "product_images")
     private List<Image> images = new ArrayList<>();
 
     // 상위 카테고리와의 관계 설정
@@ -52,15 +52,14 @@ public class Product {
     @Enumerated(EnumType.STRING) // Enum 값을 데이터베이스에 문자열로 저장
     private ThemeCategory themeCategory;
 
-    private String fileUrl;
 
     // 삭제 상태 변경 메서드
     public void changeDelFlag(boolean newDelFlag) {
         this.delFlag = newDelFlag;
     }
 
-    public void addImage(String filename, String imageUrl) {
-        images.add(new Image(images.size(), filename, imageUrl));  // ord 필드 설정
+    public void addImage(String filename, String fileUrl) {
+        images.add(new Image(images.size(), filename, fileUrl));  // ord 필드 설정
     }
 
     public void clearImages() {
