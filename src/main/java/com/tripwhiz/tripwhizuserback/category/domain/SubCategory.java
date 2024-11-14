@@ -10,6 +10,7 @@ import lombok.*;
 @Getter
 @ToString
 public class SubCategory {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long scno;
@@ -20,4 +21,5 @@ public class SubCategory {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cno")
     private Category category;
+
 }
