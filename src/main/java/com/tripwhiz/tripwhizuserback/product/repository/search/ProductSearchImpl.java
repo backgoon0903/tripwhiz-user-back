@@ -47,7 +47,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         JPQLQuery<Tuple> tupleQuery = query.select(
                 product,
-                image.fileName
+                image.fileUrl
         );
 
         tupleQuery.fetch();
@@ -86,8 +86,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         JPQLQuery<Tuple> tupleQuery = query.select(
                 product,
-                image.fileName,
-                product.count()
+                image.fileUrl
         );
 
         List<Tuple> tupleList = tupleQuery.fetch();
@@ -97,13 +96,13 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         List<ProductListDTO> dtoList = tupleList.stream().map(t -> {
             Product productObj = t.get(product);
-            String fileName = t.get(image.fileName);
+            String fileUrl = t.get(image.fileUrl);
 
             return ProductListDTO.builder()
                     .pno(productObj.getPno())
                     .pname(productObj.getPname())
                     .price(productObj.getPrice())
-                    .fileName(fileName)
+                    .fileUrl(fileUrl)
                     .build();
         }).collect(Collectors.toList());
 
@@ -136,13 +135,16 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         this.getQuerydsl().applyPagination(pageable, query);
 
+        // 쿼리 수정: count()를 추가하여 총 개수와 파일명 가져오기
         JPQLQuery<Tuple> tupleQuery = query.select(
                 product,
-                image.fileName,
+                image.fileUrl,
                 product.count()
         );
 
         List<Tuple> tupleList = tupleQuery.fetch();
+        log.info(tupleList);
+
         if (tupleList.isEmpty()) {
             return null;
         }
@@ -151,14 +153,14 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         tupleList.forEach(t -> {
             Product productObj = t.get(product); // QProduct에서 Product 객체 직접 추출
-            String fileName = t.get(image.fileName);
-            Long count = t.get(product.count()); // count 값 추출
+            String fileUrl = t.get(image.fileUrl);
+
 
             ProductListDTO dto = ProductListDTO.builder()
                     .pno(productObj.getPno())
                     .pname(productObj.getPname())
                     .price(productObj.getPrice())
-                    .fileName(fileName)
+                    .fileUrl(fileUrl)
                     .build();
 
             dtoList.add(dto); // dtoList에 추가
@@ -194,7 +196,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         JPQLQuery<Tuple> tupleQuery = query.select(
                 product,
-                image.fileName,
+                image.fileUrl,
                 product.count()
         );
 
@@ -205,13 +207,13 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         List<ProductListDTO> dtoList = tupleList.stream().map(t -> {
             Product productObj = t.get(product);
-            String fileName = t.get(image.fileName);
+            String fileUrl = t.get(image.fileUrl);
 
             return ProductListDTO.builder()
                     .pno(productObj.getPno())
                     .pname(productObj.getPname())
                     .price(productObj.getPrice())
-                    .fileName(fileName)
+                    .fileUrl(fileUrl)
                     .build();
         }).collect(Collectors.toList());
 
