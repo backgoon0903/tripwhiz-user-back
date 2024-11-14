@@ -38,11 +38,11 @@ public class ImageService {
                         .filter(File::isFile)
                         .forEach(file -> {
                             String fileName = file.getName();
-                            String imageUrl = fileName;
+                            String fileUrl = fileName;
 
                             // Product에 Image 추가
-                            product.addImage(fileName, imageUrl);
-                            logger.info("Added image to product - Filename: {}, URL: {}", fileName, imageUrl);
+                            product.addImage(fileName, fileUrl);
+                            logger.info("Added image to product - Filename: {}, URL: {}", fileName, fileUrl);
                         });
 
                 // Product와 이미지를 함께 저장
