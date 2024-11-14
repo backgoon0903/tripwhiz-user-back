@@ -19,14 +19,12 @@ public class ImageService {
     @Autowired
     private ProductRepository productRepository;
 
-    private static final String BASE_URL = "http://localhost/images/";
-
     @Transactional
-    public void saveImagesWithUrl(String directoryPath, Long productId) {
-        logger.info("Starting to save images for product ID: {} from directory: {}", productId, directoryPath);
+    public void saveImagesWithUrl(String directoryPath, Long pno) {
+        logger.info("Starting to save images for product ID: {} from directory: {}", pno, directoryPath);
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + productId));
+        Product product = productRepository.findById(pno)
+                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + pno));
 
         File directory = new File(directoryPath);
         if (directory.exists() && directory.isDirectory()) {
@@ -38,11 +36,11 @@ public class ImageService {
                         .filter(File::isFile)
                         .forEach(file -> {
                             String fileName = file.getName();
-                            String imageUrl = fileName;
+                            String fileUrl = fileName;
 
                             // Product에 Image 추가
-                            product.addImage(fileName, imageUrl);
-                            logger.info("Added image to product - Filename: {}, URL: {}", fileName, imageUrl);
+                            product.addImage(fileName, fileUrl);
+                            logger.info("Added image to product - Filename: {}, URL: {}", fileName, fileUrl);
                         });
 
                 // Product와 이미지를 함께 저장

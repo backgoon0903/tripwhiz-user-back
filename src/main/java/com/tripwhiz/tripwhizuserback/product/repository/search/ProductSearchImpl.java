@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.tripwhiz.tripwhizuserback.product.domain.QImage.image;
+
 @Log4j2
 public class ProductSearchImpl extends QuerydslRepositorySupport implements ProductSearch {
 
@@ -45,7 +47,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         JPQLQuery<Tuple> tupleQuery = query.select(
                 product,
-                image.filename
+                image.fileName
         );
 
         tupleQuery.fetch();
@@ -84,7 +86,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         JPQLQuery<Tuple> tupleQuery = query.select(
                 product,
-                product.fileUrl,
+                image.fileName,
                 product.count()
         );
 
@@ -95,13 +97,13 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         List<ProductListDTO> dtoList = tupleList.stream().map(t -> {
             Product productObj = t.get(product);
-            String fileUrl = t.get(product.fileUrl);
+            String fileName = t.get(image.fileName);
 
             return ProductListDTO.builder()
                     .pno(productObj.getPno())
                     .pname(productObj.getPname())
                     .price(productObj.getPrice())
-                    .fileUrl(fileUrl)
+                    .fileName(fileName)
                     .build();
         }).collect(Collectors.toList());
 
@@ -136,7 +138,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         JPQLQuery<Tuple> tupleQuery = query.select(
                 product,
-                image.filename,
+                image.fileName,
                 product.count()
         );
 
@@ -149,14 +151,14 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         tupleList.forEach(t -> {
             Product productObj = t.get(product); // QProduct에서 Product 객체 직접 추출
-            String fileName = t.get(image.filename);
+            String fileName = t.get(image.fileName);
             Long count = t.get(product.count()); // count 값 추출
 
             ProductListDTO dto = ProductListDTO.builder()
                     .pno(productObj.getPno())
                     .pname(productObj.getPname())
                     .price(productObj.getPrice())
-                    .fileUrl(fileName)
+                    .fileName(fileName)
                     .build();
 
             dtoList.add(dto); // dtoList에 추가
@@ -192,7 +194,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         JPQLQuery<Tuple> tupleQuery = query.select(
                 product,
-                product.fileUrl,
+                image.fileName,
                 product.count()
         );
 
@@ -203,13 +205,13 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         List<ProductListDTO> dtoList = tupleList.stream().map(t -> {
             Product productObj = t.get(product);
-            String fileUrl = t.get(product.fileUrl);
+            String fileName = t.get(image.fileName);
 
             return ProductListDTO.builder()
                     .pno(productObj.getPno())
                     .pname(productObj.getPname())
                     .price(productObj.getPrice())
-                    .fileUrl(fileUrl)
+                    .fileName(fileName)
                     .build();
         }).collect(Collectors.toList());
 
