@@ -15,15 +15,12 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cno;
 
-    @Column(nullable = false, length = 50)
-    private String cname;
-
     @Builder.Default
     private ParentCategory category = ParentCategory.All;
 
-    private boolean delFlag;
-
     @Builder.Default
     private ThemeCategory themeCategory = ThemeCategory.RELAXATION;
+
+    private boolean delFlag;
 
 }
