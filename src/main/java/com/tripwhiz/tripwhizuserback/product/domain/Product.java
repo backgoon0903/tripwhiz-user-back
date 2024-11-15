@@ -58,8 +58,8 @@ public class Product {
         this.delFlag = newDelFlag;
     }
 
-    public void addImage(String filename, String imageUrl) {
-        images.add(new Image(images.size(), filename, imageUrl));  // ord 필드 설정
+    public void addImage(String filename, String fileUrl) {
+        images.add(new Image(images.size(), filename, fileUrl));  // ord 필드 설정
     }
 
     public void clearImages() {

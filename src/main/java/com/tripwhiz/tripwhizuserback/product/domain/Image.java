@@ -13,7 +13,6 @@ import lombok.ToString;
 @Getter
 public class Image {
 
-
     private int ord;  // 고유 ID 필드로 설정
 
     private String fileName;  // 파일명

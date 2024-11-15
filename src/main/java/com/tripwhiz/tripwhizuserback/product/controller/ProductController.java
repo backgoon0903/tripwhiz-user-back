@@ -9,11 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -77,5 +73,16 @@ public class ProductController {
         log.info("Product list by theme response: {}", response);
 
         return ResponseEntity.ok(response);
+    }
+
+    // Admin API에서 전송하는 상품 정보를 받아 저장하는 엔드포인트
+    @PostMapping("/add")
+    public ResponseEntity<String> addProduct(@RequestBody ProductListDTO productListDTO) {
+        log.info("Receiving new product data from Admin API");
+
+        // ProductListDTO를 Product 엔티티로 변환하여 DB에 저장
+        productService.saveProductFromAdmin(productListDTO);
+
+        return ResponseEntity.ok("Product saved successfully from Admin API");
     }
 }
