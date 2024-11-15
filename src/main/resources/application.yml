@@ -37,15 +37,19 @@ com:
     refreshTime: 10080
     alwaysNew: true
     upload:
-      path: /c/upload/attach # image upload path
+      path: /c/upload/attach  # image upload path
       qrpath: qrimages
 
 logging:
   level:
     org.springframework.security.web: TRACE
 
-  mvc:
-    throw-exception-if-no-handler-found: true
-  web:
-    resources:
-      add-mappings: false
+mvc:
+  throw-exception-if-no-handler-found: true
+
+web:
+  resources:
+    add-mappings: false
+
+server:
+  port: 8081  # 원하는 포트 번호로 변경

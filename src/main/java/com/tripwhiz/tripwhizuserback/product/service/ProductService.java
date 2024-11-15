@@ -1,7 +1,12 @@
 package com.tripwhiz.tripwhizuserback.product.service;
 
+import com.tripwhiz.tripwhizuserback.category.domain.Category;
+import com.tripwhiz.tripwhizuserback.category.domain.SubCategory;
+import com.tripwhiz.tripwhizuserback.category.repository.CategoryRepository;
+import com.tripwhiz.tripwhizuserback.category.repository.SubCategoryRepository;
 import com.tripwhiz.tripwhizuserback.common.dto.PageRequestDTO;
 import com.tripwhiz.tripwhizuserback.common.dto.PageResponseDTO;
+import com.tripwhiz.tripwhizuserback.product.domain.Product;
 import com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO;
 import com.tripwhiz.tripwhizuserback.product.dto.ProductReadDTO;
 import com.tripwhiz.tripwhizuserback.product.repository.ProductRepository;
@@ -20,6 +25,8 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final SubCategoryRepository subCategoryRepository;
     private final CustomFileUtil customFileUtil;
 
     // 기본 상품 목록 조회
@@ -62,5 +69,20 @@ public class ProductService {
             }
             return product;
         });
+    }
+
+    // Admin API에서 전송된 상품 정보를 DB에 저장하는 메서드
+    public void saveProductFromAdmin(ProductListDTO productListDTO) {
+        // Category와 SubCategory를 찾음
+        Category category = categoryRepository.findById(productListDTO.getCategoryCno())
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+        SubCategory subCategory = subCategoryRepository.findById(productListDTO.getSubCategoryScno())
+                .orElseThrow(() -> new RuntimeException("SubCategory not found"));
+
+        // ProductListDTO를 Product 엔티티로 변환
+        Product product = productListDTO.toEntity(category, subCategory);
+
+        // DB에 저장
+        productRepository.save(product);
     }
 }
