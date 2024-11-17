@@ -2,7 +2,7 @@ package com.tripwhiz.tripwhizuserback.product.dto;
 
 import com.tripwhiz.tripwhizuserback.category.domain.Category;
 import com.tripwhiz.tripwhizuserback.category.domain.SubCategory;
-import com.tripwhiz.tripwhizuserback.category.domain.ThemeCategory;
+import com.tripwhiz.tripwhizuserback.product.domain.ThemeCategory;
 import com.tripwhiz.tripwhizuserback.product.domain.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

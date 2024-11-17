@@ -1,21 +1,22 @@
 package com.tripwhiz.tripwhizuserback.product.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
-@Embeddable
-@ToString
-@AllArgsConstructor
-@NoArgsConstructor
+@Entity
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class Image {
 
-    private int ord;  // 고유 ID 필드로 설정
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long ino;
 
+    private int ord;  // 고유 ID 필드로 설정
     private String fileName;  // 파일명
-    private String fileUrl;  // 이미지 URL
+
 
 }

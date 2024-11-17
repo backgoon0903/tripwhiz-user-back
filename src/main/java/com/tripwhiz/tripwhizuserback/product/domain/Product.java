@@ -2,7 +2,6 @@ package com.tripwhiz.tripwhizuserback.product.domain;
 
 import com.tripwhiz.tripwhizuserback.category.domain.Category;
 import com.tripwhiz.tripwhizuserback.category.domain.SubCategory;
-import com.tripwhiz.tripwhizuserback.category.domain.ThemeCategory;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,23 +32,29 @@ public class Product {
 
     private boolean delFlag;
 
-    // Image 컬렉션을 List로 변경하고 정렬 인덱스 추가
-    @ElementCollection
-    @CollectionTable(name = "product_images")
+    // Image 컬렉션을 List로 관리
+//    @ElementCollection
+//    @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
+//    private List<Image> images = new ArrayList<>();
+
+    // Image 컬렉션을 @OneToMany 관계로 변경
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "product_id")
     private List<Image> images = new ArrayList<>();
 
     // 상위 카테고리와의 관계 설정
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cno") // 외래 키 이름을 지정 (상위 카테고리 ID와 연결)
+    @JoinColumn(name = "category_id") // 외래 키 이름을 지정 (상위 카테고리 ID와 연결)
     private Category category;
 
     // 하위 카테고리와의 관계 설정
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "scno") // 외래 키 이름을 지정 (하위 카테고리 ID와 연결)
+    @JoinColumn(name = "sub_category_id") // 외래 키 이름을 지정 (하위 카테고리 ID와 연결)
     private SubCategory subCategory;
 
-    // 테마 카테고리 설정 (예: 휴양, 힐링 등)
-    @Enumerated(EnumType.STRING) // Enum 값을 데이터베이스에 문자열로 저장
+    // 테마와의 관계 설정 (ManyToOne)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "theme_category_id")
     private ThemeCategory themeCategory;
 
 
@@ -58,13 +63,13 @@ public class Product {
         this.delFlag = newDelFlag;
     }
 
-    public void addImage(String filename, String fileUrl) {
-        images.add(new Image(images.size(), filename, fileUrl));  // ord 필드 설정
+    public void addImage(String fileName) {
+        images.add(new Image(null, images.size(), fileName));  // ord 필드 설정
     }
 
-    public void clearImages() {
-        images.clear();
-    }
+//    public void clearImages() {
+//        images.clear();
+//    }
 
     // 상위 카테고리 설정 메서드
     public void setCategory(Category category) {
