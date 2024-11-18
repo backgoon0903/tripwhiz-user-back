@@ -38,8 +38,8 @@ public class Product {
 //    private List<Image> images = new ArrayList<>();
 
     // Image 컬렉션을 @OneToMany 관계로 변경
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(name = "product_id")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Image> images = new ArrayList<>();
 
     // 상위 카테고리와의 관계 설정
@@ -64,12 +64,12 @@ public class Product {
     }
 
     public void addImage(String fileName) {
-        images.add(new Image(null, images.size(), fileName));  // ord 필드 설정
+        images.add(new Image(images.size(), fileName));  // ord 필드 설정
     }
 
-//    public void clearImages() {
-//        images.clear();
-//    }
+    public void clearImages() {
+        images.clear();
+    }
 
     // 상위 카테고리 설정 메서드
     public void setCategory(Category category) {

@@ -31,7 +31,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
     }
 
     @Override
-    public Page<Product> list(Pageable pageable) {
+    public Page<ProductListDTO> list(Pageable pageable) {
         log.info("-------------------list-----------");
 
         QProduct product = QProduct.product;
@@ -103,7 +103,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
                     .pno(productObj.getPno())
                     .pname(productObj.getPname())
                     .price(productObj.getPrice())
-                    .fileUrl("/images/" + fileName)
+                    .fileName("/images/" + fileName)
                     .build();
         }).collect(Collectors.toList());
 
@@ -161,7 +161,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
                     .pno(productObj.getPno())
                     .pname(productObj.getPname())
                     .price(productObj.getPrice())
-                    .fileUrl("/images/" + fileName)
+                    .fileName("/images/" + fileName)
                     .build();
 
             dtoList.add(dto); // dtoList에 추가
@@ -219,7 +219,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
                     .pno(productObj.getPno())
                     .pname(productObj.getPname())
                     .price(productObj.getPrice())
-                    .fileUrl("/images/" + fileName) // Nginx를 통한 접근 URL 생성
+                    .fileName("/images/" + fileName) // Nginx를 통한 접근 URL 생성
                     .build();
         }).collect(Collectors.toList());
 
