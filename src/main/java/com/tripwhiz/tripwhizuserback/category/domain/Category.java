@@ -15,11 +15,11 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cno;
 
-    @Builder.Default
-    private ParentCategory category = ParentCategory.All;
+    // 상위 카테고리 설정 (ParentCategory Enum 사용)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ParentCategory category;
 
-    @Builder.Default
-    private ThemeCategory themeCategory = ThemeCategory.RELAXATION;
 
     private boolean delFlag;
 

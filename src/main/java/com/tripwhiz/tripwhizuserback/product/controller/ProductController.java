@@ -26,7 +26,7 @@ public class ProductController {
     public ResponseEntity<PageResponseDTO<ProductListDTO>> list(@Validated PageRequestDTO requestDTO) {
         log.info("Fetching product list");
 
-        PageResponseDTO<ProductListDTO> response = productService.list(requestDTO);
+        PageResponseDTO<ProductListDTO> response = productService.getList(requestDTO);
         log.info("Product list response: {}", response);
 
         return ResponseEntity.ok(response);
@@ -66,23 +66,23 @@ public class ProductController {
 
     // 테마 카테고리로 상품 목록 조회 엔드포인트
     @GetMapping("/list/theme")
-    public ResponseEntity<PageResponseDTO<ProductListDTO>> listByTheme(@RequestParam String themeCategory, @Validated PageRequestDTO requestDTO) {
-        log.info("Fetching product list by theme category: {}", themeCategory);
+    public ResponseEntity<PageResponseDTO<ProductListDTO>> listByTheme(@RequestParam Long tno, @Validated PageRequestDTO requestDTO) {
+        log.info("Fetching product list by theme category tno: {}", tno);
 
-        PageResponseDTO<ProductListDTO> response = productService.listByTheme(themeCategory, requestDTO);
+        PageResponseDTO<ProductListDTO> response = productService.listByTheme(tno, requestDTO);
         log.info("Product list by theme response: {}", response);
 
         return ResponseEntity.ok(response);
     }
 
     // Admin API에서 전송하는 상품 정보를 받아 저장하는 엔드포인트
-    @PostMapping("/add")
-    public ResponseEntity<String> addProduct(@RequestBody ProductListDTO productListDTO) {
-        log.info("Receiving new product data from Admin API");
-
-        // ProductListDTO를 Product 엔티티로 변환하여 DB에 저장
-        productService.saveProductFromAdmin(productListDTO);
-
-        return ResponseEntity.ok("Product saved successfully from Admin API");
-    }
+//    @PostMapping("/add")
+//    public ResponseEntity<String> addProduct(@RequestBody ProductListDTO productListDTO) {
+//        log.info("Receiving new product data from Admin API");
+//
+//        // ProductListDTO를 Product 엔티티로 변환하여 DB에 저장
+//        productService.saveProductFromAdmin(productListDTO);
+//
+//        return ResponseEntity.ok("Product saved successfully from Admin API");
+//    }
 }
