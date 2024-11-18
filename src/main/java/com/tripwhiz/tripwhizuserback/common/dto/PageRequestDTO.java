@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @Data
 @SuperBuilder
@@ -30,4 +32,11 @@ public class PageRequestDTO {
 
     // 테마 카테고리 (ThemeCategory enum 값의 문자열 표현)
     private String themeCategory;
+
+    // Pageable 객체 생성 메서드 추가
+    public Pageable getPageable() {
+        return PageRequest.of(page - 1, size);
+    }
 }
+
+

@@ -8,26 +8,26 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "product")
-public class Image {
+@Builder
+@ToString
+public class ThemeCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ino;
+    private Long tno;
 
-    private int ord;  // 고유 ID 필드로 설정
-    private String fileName;  // 파일명
+    @Column(nullable = false)
+    private String tname;
 
+    private boolean delFlag;
+
+    // 테마가 상품을 참조
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_pno")
     private Product product;
 
-
-
-    public Image(int ord, String fileName) {
-        this.ord = ord;
-        this.fileName = fileName;
-    }
-
-
+    // 삭제 상태 변경 메서드
+//    public void changeDelFlag(boolean newDelFlag) {
+//        this.delFlag = newDelFlag;
+//    }
 }
