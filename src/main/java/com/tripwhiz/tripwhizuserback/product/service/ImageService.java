@@ -2,16 +2,26 @@ package com.tripwhiz.tripwhizuserback.product.service;
 
 import com.tripwhiz.tripwhizuserback.product.domain.Product;
 import com.tripwhiz.tripwhizuserback.product.repository.ProductRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 
 @Service
 public class ImageService {
 
+    private static final Logger logger = LoggerFactory.getLogger(ImageService.class);
 
     @Value("${UPLOAD_DIR:/app/upload}")
     private String uploadDir;
@@ -63,7 +73,6 @@ public class ImageService {
 
         File directory = new File(uploadDir);
         if (directory.exists() && directory.isDirectory()) {
-
             File[] files = directory.listFiles();
             if (files != null) {
                 Arrays.stream(files)
