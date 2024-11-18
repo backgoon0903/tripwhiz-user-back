@@ -2,8 +2,11 @@ package com.tripwhiz.tripwhizuserback.product.repository;
 
 import com.tripwhiz.tripwhizuserback.category.domain.CategoryProduct;
 import com.tripwhiz.tripwhizuserback.product.domain.Product;
+import com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO;
 import com.tripwhiz.tripwhizuserback.product.dto.ProductReadDTO;
 import com.tripwhiz.tripwhizuserback.product.repository.search.ProductSearch;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,9 +15,19 @@ import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long>, ProductSearch {
 
+//    전체 상품 목록 조회
+    @Query("SELECT new com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO(" +
+            "p.pno, p.pname, p.price, p.category.cno, p.subCategory.scno, t.tno, i.fileName) " +
+            "FROM Product p " +
+            "LEFT JOIN p.images i ON i.ord = 0 " +
+            "LEFT JOIN p.themeCategory t ON t.tno = p.themeCategory.tno " +
+            "ORDER BY p.pno DESC")
+    Page<ProductListDTO> allProductList(Pageable pageable);
+
+
     // 특정 상품을 ProductReadDTO 형태로 조회
     @Query("select " +
-            "new com.tripwhiz.tripwhizuserback.product.dto.ProductReadDTO(p.pno, p.pname, p.pdesc, p.price, i.fileUrl, " +
+            "new com.tripwhiz.tripwhizuserback.product.dto.ProductReadDTO(p.pno, p.pname, p.pdesc, p.price, i.fileName, " +
             "p.category.cno, p.subCategory.scno, p.themeCategory) " + // 파일명 추가
             "from Product p " +
             "left join p.images i on i.ord = 0 " + // 대표 이미지를 가져오기 위해 ord = 0인 이미지와 조인
@@ -26,22 +39,36 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
             "join fetch cp.product p " +
             "join fetch cp.category c " +
             "where p.pno = :pno")
-    Optional<CategoryProduct> findCategory(@Param("pno") Long pno);
+    Optional<CategoryProduct> findByCategory(@Param("pno") Long pno);
 
     // 상위 카테고리를 기준으로 상품 조회
-    @Query("select p from Product p " +
-            "join p.category c " +
-            "where c.cno = :cno")
-    Optional<Product> findByCategoryCno(@Param("cno") Long cno);
+    @Query("SELECT new com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO(" +
+            "p.pno, p.pname, p.price, p.category.cno, p.subCategory.scno, t.tno, i.fileName) " +
+            "FROM Product p " +
+            "LEFT JOIN p.images i ON i.ord = 0 " +
+            "LEFT JOIN p.themeCategory t ON t.tno = p.themeCategory.tno " +
+            "WHERE p.category.cno = :cno " +
+            "ORDER BY p.pno DESC")
+    Page<ProductListDTO> findByCategoryCno(@Param("cno") Long cno, Pageable pageable);
 
     // 하위 카테고리를 기준으로 상품 조회
-    @Query("select p from Product p " +
-            "join p.subCategory sc " +
-            "where sc.scno = :scno")
-    Optional<Product> findBySubCategoryScno(@Param("scno") Long scno);
+    @Query("SELECT new com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO(" +
+            "p.pno, p.pname, p.price, p.category.cno, p.subCategory.scno, t.tno, i.fileName) " +
+            "FROM Product p " +
+            "LEFT JOIN p.images i ON i.ord = 0 " +
+            "LEFT JOIN p.themeCategory t ON t.tno = p.themeCategory.tno " +
+            "WHERE p.subCategory.scno = :scno " +
+            "ORDER BY p.pno DESC")
+    Page<ProductListDTO> findBySubCategoryScno(@Param("scno") Long scno, Pageable pageable);
 
-    // 테마 카테고리를 기준으로 상품 조회
-    @Query("select p from Product p " +
-            "where p.themeCategory = :themeCategory")
-    Optional<Product> findByThemeCategory(@Param("themeCategory") String themeCategory);
-}
+    // 테마 카테고리 tno를 기준으로 상품 조회
+    @Query("SELECT new com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO(" +
+            "p.pno, p.pname, p.price, p.category.cno, p.subCategory.scno, t.tno, i.fileName) " +
+            "FROM Product p " +
+            "LEFT JOIN p.images i ON i.ord = 0 " +
+            "LEFT JOIN p.themeCategory t ON t.tno = p.themeCategory.tno " +
+            "WHERE t.tno = :tno " +
+            "ORDER BY p.pno DESC")
+    Page<ProductListDTO> findByThemeCategoryTno(@Param("tno") Long tno, Pageable pageable);
+
+ }

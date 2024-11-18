@@ -1,6 +1,6 @@
 package com.tripwhiz.tripwhizuserback.product.dto;
 
-import com.tripwhiz.tripwhizuserback.category.domain.ThemeCategory;
+import com.tripwhiz.tripwhizuserback.product.domain.ThemeCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

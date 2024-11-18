@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface ProductSearch {
 
-    Page<Product> list(Pageable pageable);
+    Page<ProductListDTO> list(Pageable pageable);
 
     PageResponseDTO<ProductListDTO> listByCno(PageRequestDTO pageRequestDTO);
 
