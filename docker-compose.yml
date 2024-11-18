@@ -1,8 +1,32 @@
+version: '0.2'
+
 services:
   nginx:
-    image: nginx
+    image: nginx:latest
+    container_name: my-nginx
     ports:
-      - "80:80"
+      - 80:80
     volumes:
-      - "/C:/zzz/upload:/uploads"  # 호스트의 C:/zzz/upload 디렉토리를 컨테이너의 /uploads에 마운트
-      - "/C:/zzz/tripwhiz-user-back/nginx/nginx.conf:/etc/nginx/nginx.conf"
+      - C:/upload:/usr/share/nginx/html:ro           # HTML 파일 마운트
+    restart: always
+
+  upload_container:
+    image: eggzuxi/product_img
+    depends_on:
+      nginx:
+        condition: service_healthy
+
+    container_name: nginx_img
+    ports:
+      - 8080:8080
+    environment:
+      - com.tripwhiz.upload=/app/upload
+      - spring.multipart.location=/c/upload/attach
+    networks:
+      - uploadnet
+    volumes:
+      - ./upload:/c/upload/attach
+
+
+networks:
+  uploadnet: {}     
