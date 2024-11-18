@@ -136,3 +136,5 @@ public class ProductRepoTests {
         // 4. 검증: 상품 및 이미지가 제대로 저장되었는지 확인
         long productCount = productRepository.count();
         assertThat(productCount).isEqualTo(100);
+    }
+}
