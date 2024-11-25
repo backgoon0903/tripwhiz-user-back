@@ -10,6 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @ToString
+@Table(name = "theme_category")
 public class ThemeCategory {
 
     @Id
@@ -21,13 +22,9 @@ public class ThemeCategory {
 
     private boolean delFlag;
 
-    // 테마가 상품을 참조
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_pno")
-    private Product product;
 
     // 삭제 상태 변경 메서드
-//    public void changeDelFlag(boolean newDelFlag) {
-//        this.delFlag = newDelFlag;
-//    }
+    public void changeDelFlag(boolean newDelFlag) {
+        this.delFlag = newDelFlag;
+    }
 }

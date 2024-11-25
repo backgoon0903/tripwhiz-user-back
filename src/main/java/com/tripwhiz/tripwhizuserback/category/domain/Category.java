@@ -18,7 +18,7 @@ public class Category {
     // 상위 카테고리 설정 (ParentCategory Enum 사용)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ParentCategory category;
+    private ParentCategory parentCategory;
 
 
     private boolean delFlag;

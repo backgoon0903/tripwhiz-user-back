@@ -18,6 +18,5 @@ public class ProductReadDTO {
     private int price;               // 상품 가격
     private Long categoryCno;        // 상위 카테고리 ID
     private Long subCategoryScno;    // 하위 카테고리 ID
-    private Long themeTno;
-    private String fileName;
+
 }
