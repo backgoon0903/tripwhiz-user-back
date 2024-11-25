@@ -1,27 +1,21 @@
 package com.tripwhiz.tripwhizuserback.product.repository.search;
 
-import com.querydsl.core.Tuple;
 import com.querydsl.jpa.JPQLQuery;
-import com.tripwhiz.tripwhizuserback.category.domain.QCategoryProduct;
 import com.tripwhiz.tripwhizuserback.common.dto.PageRequestDTO;
 import com.tripwhiz.tripwhizuserback.common.dto.PageResponseDTO;
 import com.tripwhiz.tripwhizuserback.product.domain.Product;
-import com.tripwhiz.tripwhizuserback.product.domain.QImage;
 import com.tripwhiz.tripwhizuserback.product.domain.QProduct;
+import com.tripwhiz.tripwhizuserback.product.domain.QProductTheme;
 import com.tripwhiz.tripwhizuserback.product.domain.QThemeCategory;
 import com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.tripwhiz.tripwhizuserback.product.domain.QImage.image;
 
 @Log4j2
 public class ProductSearchImpl extends QuerydslRepositorySupport implements ProductSearch {
@@ -30,38 +24,11 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         super(Product.class);
     }
 
+    //전체 상품 목록 조회
     @Override
-    public Page<ProductListDTO> list(Pageable pageable) {
+    public Page<ProductListDTO> list(PageRequestDTO pageRequestDTO) {
         log.info("-------------------list-----------");
 
-        QProduct product = QProduct.product;
-        QImage image = QImage.image;
-
-        JPQLQuery<Product> query = from(product);
-        query.leftJoin(product.images, image);
-
-        query.where(image.ord.eq(0));
-        query.groupBy(product);
-
-        // 페이징 및 정렬 처리
-        this.getQuerydsl().applyPagination(pageable, query);
-
-        JPQLQuery<Tuple> tupleQuery = query.select(
-                product,
-                image.fileName
-        );
-
-        tupleQuery.fetch();
-        return null;
-    }
-
-    @Override
-    public PageResponseDTO<ProductListDTO> listByCno(PageRequestDTO pageRequestDTO) {
-        return listByCategory(pageRequestDTO.getCategoryCno(), pageRequestDTO);
-    }
-
-    @Override
-    public PageResponseDTO<ProductListDTO> listByCategory(Long cno, PageRequestDTO pageRequestDTO) {
         Pageable pageable = PageRequest.of(
                 pageRequestDTO.getPage() - 1,
                 pageRequestDTO.getSize(),
@@ -69,167 +36,139 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         );
 
         QProduct product = QProduct.product;
-        QImage image = QImage.image;
-        QCategoryProduct categoryProduct = QCategoryProduct.categoryProduct;
-
         JPQLQuery<Product> query = from(product);
-        query.leftJoin(categoryProduct).on(categoryProduct.product.eq(product));
-        query.leftJoin(product.images, image);
 
-        query.where(image.ord.eq(0));
-        if (cno != null) {
-            query.where(product.category.cno.eq(cno));
-        }
+        // 페이징 적용
+        List<Product> productList = getQuerydsl().applyPagination(pageable, query)
+                .select(product)
+                .fetch();
 
-        query.groupBy(product);
+        // DTO 변환
+        List<ProductListDTO> dtoList = productList.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
 
-        this.getQuerydsl().applyPagination(pageable, query);
+        // 총 개수 조회
+        long total = query.fetchCount();
 
-        JPQLQuery<Tuple> tupleQuery = query.select(
-                product,
-                image.fileName
-        );
-
-        List<Tuple> tupleList = tupleQuery.fetch();
-        if (tupleList.isEmpty()) {
-            return null;
-        }
-
-        List<ProductListDTO> dtoList = tupleList.stream().map(t -> {
-            Product productObj = t.get(product);
-            String fileName = t.get(image.fileName);
-
-            return ProductListDTO.builder()
-                    .pno(productObj.getPno())
-                    .pname(productObj.getPname())
-                    .price(productObj.getPrice())
-                    .fileName("/images/" + fileName)
-                    .build();
-        }).collect(Collectors.toList());
-
-        long total = tupleQuery.fetchCount();
-
-        return PageResponseDTO.<ProductListDTO>withAll()
-                .dtoList(dtoList)
-                .totalCount(total)
-                .pageRequestDTO(pageRequestDTO)
-                .build();
+        return new PageImpl<>(dtoList, pageable, total);
     }
 
-    @Override
-    public PageResponseDTO<ProductListDTO> listBySubCategory(Long scno, PageRequestDTO pageRequestDTO) {
+
+    public Page<ProductListDTO> findByCategory(Long cno, PageRequestDTO pageRequestDTO) {
+
+        log.info("Fetching product list by category ID: {}", cno);
+
         Pageable pageable = PageRequest.of(
-                pageRequestDTO.getPage() - 1,
-                pageRequestDTO.getSize(),
+                pageRequestDTO.getPage() - 1, // 클라이언트는 1부터 시작하지만 Pageable은 0부터 시작하므로 -1
+                pageRequestDTO.getSize(),  // 페이지 크기 설정
                 Sort.by("pno").descending()
         );
 
+        // Querydsl로 Product 엔티티를 조회하기 위해 QProduct 객체 생성
         QProduct product = QProduct.product;
-        QImage image = QImage.image;
-        JPQLQuery<Product> query = from(product);
-
-        if (scno != null) {
-            query.where(product.subCategory.scno.eq(scno));
-        }
-
-        query.groupBy(product);
-
-        this.getQuerydsl().applyPagination(pageable, query);
-
-        // 쿼리 수정: count()를 추가하여 총 개수와 파일명 가져오기
-        JPQLQuery<Tuple> tupleQuery = query.select(
-                product,
-                image.fileName,
-                product.count()
-        );
-
-        List<Tuple> tupleList = tupleQuery.fetch();
-        log.info(tupleList);
-
-        if (tupleList.isEmpty()) {
-            return null;
-        }
-
-        List<ProductListDTO> dtoList = new ArrayList<>();
-
-        tupleList.forEach(t -> {
-            Product productObj = t.get(product); // QProduct에서 Product 객체 직접 추출
-            String fileName = t.get(image.fileName);
-
-
-            ProductListDTO dto = ProductListDTO.builder()
-                    .pno(productObj.getPno())
-                    .pname(productObj.getPname())
-                    .price(productObj.getPrice())
-                    .fileName("/images/" + fileName)
-                    .build();
-
-            dtoList.add(dto); // dtoList에 추가
-        });
-
-        long total = tupleQuery.fetchCount();
-
-        return PageResponseDTO.<ProductListDTO>withAll()
-                .dtoList(dtoList)
-                .totalCount(total)
-                .pageRequestDTO(pageRequestDTO)
-                .build();
-    }
-
-    @Override
-    public PageResponseDTO<ProductListDTO> listByTheme(String themeCategoryName, PageRequestDTO pageRequestDTO) {
-        Pageable pageable = PageRequest.of(
-                pageRequestDTO.getPage() - 1,
-                pageRequestDTO.getSize(),
-                Sort.by("pno").descending()
-        );
-
-        QProduct product = QProduct.product;
-        QImage image = QImage.image;
-        QThemeCategory themeCategory = QThemeCategory.themeCategory;
 
         JPQLQuery<Product> query = from(product)
-                .leftJoin(product.images, image)
-                .leftJoin(product.themeCategory, themeCategory);
+                .where(product.category.cno.eq(cno));
 
-        if (themeCategoryName != null) {
-            query.leftJoin(product.themeCategory, themeCategory)
-                    .where(themeCategory.tname.eq(themeCategoryName));
-        }
+        // 페이징 적용
+        List<Product> productList = getQuerydsl().applyPagination(pageable, query)
+                .select(product)
+                .fetch();
 
-        query.groupBy(product);
+        // DTO 변환
+        List<ProductListDTO> dtoList = productList.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
 
-        this.getQuerydsl().applyPagination(pageable, query);
+        // 총 개수 조회
+        long total = query.fetchCount();
 
-        JPQLQuery<Tuple> tupleQuery = query.select(
-                product,
-                product.images.get(0).fileName
+        return new PageImpl<>(dtoList, pageable, total);
+    }
+
+    @Override
+    public Page<ProductListDTO> findByCategoryAndSubCategory(Long cno, Long scno, PageRequestDTO pageRequestDTO) {
+        log.info("Fetching product list by category ID: {} and sub-category ID: {}", cno, scno);
+
+        Pageable pageable = PageRequest.of(
+                pageRequestDTO.getPage() - 1,
+                pageRequestDTO.getSize(),
+                Sort.by("pno").descending()
         );
 
-        List<Tuple> tupleList = tupleQuery.fetch();
-        if (tupleList.isEmpty()) {
-            return null;
-        }
+        QProduct product = QProduct.product;
 
-        List<ProductListDTO> dtoList = tupleList.stream().map(t -> {
-            Product productObj = t.get(product);
-            String fileName = t.get(product.images.get(0).fileName);
+        JPQLQuery<Product> query = from(product)
+                .where(product.category.cno.eq(cno).and(product.subCategory.scno.eq(scno)));
 
-            return ProductListDTO.builder()
-                    .pno(productObj.getPno())
-                    .pname(productObj.getPname())
-                    .price(productObj.getPrice())
-                    .fileName("/images/" + fileName) // Nginx를 통한 접근 URL 생성
-                    .build();
-        }).collect(Collectors.toList());
 
-        long total = tupleQuery.fetchCount();
+        // 페이징 적용
+        List<Product> productList = getQuerydsl().applyPagination(pageable, query)
+                .select(product)
+                .fetch();
 
-        return PageResponseDTO.<ProductListDTO>withAll()
-                .dtoList(dtoList)
-                .totalCount(total)
-                .pageRequestDTO(pageRequestDTO)
+        // DTO 변환
+        List<ProductListDTO> dtoList = productList.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+
+        // 총 개수 조회
+        long total = query.fetchCount();
+
+        return new PageImpl<>(dtoList, pageable, total);
+    }
+
+
+    @Override
+    public Page<ProductListDTO> findByThemeCategory(Optional<Long> tno, PageRequestDTO pageRequestDTO) {
+        log.info("Fetching product list by theme category ID: {}", tno);
+
+        Pageable pageable = PageRequest.of(
+                pageRequestDTO.getPage() - 1,
+                pageRequestDTO.getSize(),
+                Sort.by("pno").descending()
+        );
+
+        QProduct product = QProduct.product;
+        QProductTheme productTheme = QProductTheme.productTheme;
+        QThemeCategory themeCategory = QThemeCategory.themeCategory;
+
+        // Product와 ThemeCategory를 연결하는 쿼리 작성
+        JPQLQuery<Product> query = from(product)
+                .innerJoin(productTheme).on(product.eq(productTheme.product))
+                .innerJoin(themeCategory).on(productTheme.themeCategory.eq(themeCategory));
+
+        //tno가 존재하면 필터 조건 추가
+        tno.ifPresent(theme -> query.where(themeCategory.tno.eq(theme)));
+
+
+        // 페이징 적용 및 데이터 조회
+        List<Product> productList = getQuerydsl().applyPagination(pageable, query)
+                .select(product)
+                .fetch();
+
+        // DTO 변환
+        List<ProductListDTO> dtoList = productList.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+
+        // 총 개수 조회
+        long total = query.fetchCount();
+
+        return new PageImpl<>(dtoList, pageable, total);
+    }
+
+
+    private ProductListDTO convertToDto(Product product) {
+        return ProductListDTO.builder()
+                .pno(product.getPno())
+                .pname(product.getPname())
+                .price(product.getPrice())
+                .categoryCno(product.getCategory() != null ? product.getCategory().getCno() : null)
+                .subCategoryScno(product.getSubCategory() != null ? product.getSubCategory().getScno() : null)
                 .build();
     }
+
 
 }
