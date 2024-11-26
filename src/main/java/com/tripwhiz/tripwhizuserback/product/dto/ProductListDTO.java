@@ -4,10 +4,13 @@ import com.tripwhiz.tripwhizuserback.category.domain.Category;
 import com.tripwhiz.tripwhizuserback.category.domain.SubCategory;
 import com.tripwhiz.tripwhizuserback.product.domain.ThemeCategory;
 import com.tripwhiz.tripwhizuserback.product.domain.Product;
+import com.tripwhiz.tripwhizuserback.util.file.domain.AttachFile;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @Builder
@@ -20,7 +23,7 @@ public class ProductListDTO {
     private int price;
     private Long categoryCno;      // 상위 카테고리 ID
     private Long subCategoryScno;  // 하위 카테고리 ID
-
+    private List<AttachFile> attachFiles; // JH
 
     public Product toEntity(Category category, SubCategory subCategory) {
         return Product.builder()
@@ -29,6 +32,7 @@ public class ProductListDTO {
                 .price(this.price)
                 .category(category)  // Category 객체를 직접 설정
                 .subCategory(subCategory)  // SubCategory 객체를 직접 설정
+                .attachFiles(this.attachFiles)
                 .build();
     }
 
