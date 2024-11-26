@@ -24,14 +24,6 @@ public class PageRequestDTO {
     @Max(value = 100, message = "cannot over 100")
     private int size = 10;
 
-    // 상위 카테고리 ID (예: cno)
-    private Long categoryCno;
-
-    // 하위 카테고리 ID (예: scno)
-    private Long subCategoryScno;
-
-    // 테마 카테고리 (ThemeCategory enum 값의 문자열 표현)
-    private String themeCategory;
 
     // Pageable 객체 생성 메서드 추가
     public Pageable getPageable() {

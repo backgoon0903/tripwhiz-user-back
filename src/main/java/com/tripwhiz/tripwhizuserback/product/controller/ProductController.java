@@ -23,21 +23,40 @@ public class ProductController {
 
     // 상품 목록 조회
     @GetMapping("/list")
-    public ResponseEntity<PageResponseDTO<ProductListDTO>> list(@Validated PageRequestDTO requestDTO) {
-        log.info("상품 목록을 조회합니다.");
+    public ResponseEntity<PageResponseDTO<ProductListDTO>> list(
+            @RequestParam(required = false) Long tno,
+            @RequestParam(required = false) Long cno,
+            @RequestParam(required = false) Long scno,
+            @Validated PageRequestDTO requestDTO) {
+        log.info("상품 목록을 조회합니다. tno: {}, cno: {}, scno: {}", tno, cno, scno);
 
-        PageResponseDTO<ProductListDTO> response = productService.getList(requestDTO);
+        PageResponseDTO<ProductListDTO> response;
+
+        if (tno != null) {
+            // 테마로 필터링
+            Optional<Long> optionalTno = Optional.ofNullable(tno);
+            response = productService.listByTheme(optionalTno, requestDTO);
+        } else if (cno != null && scno != null) {
+            // 상위 카테고리와 하위 카테고리로 필터링
+            response = productService.listByCategoryAndSubCategory(cno, scno, requestDTO);
+        } else if (cno != null) {
+            // 상위 카테고리로 필터링
+            response = productService.listByCategory(cno, requestDTO);
+        } else {
+            // 전체 목록 조회 (기존에 이런 메소드가 없다면, 여기에 추가)
+            response = productService.getList(requestDTO);
+        }
         log.info("상품 목록 응답: {}", response);
-
         return ResponseEntity.ok(response);
     }
+
 
     // 특정 상품 ID로 조회 (이미지 포함)
     @GetMapping("/read/{pno}")
     public ResponseEntity<ProductReadDTO> getProduct(@PathVariable Long pno) {
         log.info("ID로 상품을 조회합니다: {}", pno);
 
-        Optional<ProductReadDTO> productObj = productService.getProductWithImage(pno);
+        Optional<ProductReadDTO> productObj = productService.getProductById(pno);
 
         return productObj.map(ResponseEntity::ok)
                 .orElseGet(() -> {
@@ -46,36 +65,4 @@ public class ProductController {
                 });
     }
 
-    // 상위 카테고리(cno)로 상품 목록 조회
-    @GetMapping("/list/category")
-    public ResponseEntity<PageResponseDTO<ProductListDTO>> listByCategory(@RequestParam Long cno, @Validated PageRequestDTO requestDTO) {
-        log.info("카테고리 ID(cno)로 상품 목록을 조회합니다: {}", cno);
-
-        PageResponseDTO<ProductListDTO> response = productService.listByCategory(cno, requestDTO);
-        log.info("카테고리별 상품 목록 응답: {}", response);
-
-        return ResponseEntity.ok(response);
-    }
-
-    // 하위 카테고리(scno)로 상품 목록 조회
-    @GetMapping("/list/subcategory")
-    public ResponseEntity<PageResponseDTO<ProductListDTO>> listBySubCategory(@RequestParam Long scno, @Validated PageRequestDTO requestDTO) {
-        log.info("하위 카테고리 ID(scno)로 상품 목록을 조회합니다: {}", scno);
-
-        PageResponseDTO<ProductListDTO> response = productService.listBySubCategory(scno, requestDTO);
-        log.info("하위 카테고리별 상품 목록 응답: {}", response);
-
-        return ResponseEntity.ok(response);
-    }
-
-    // 테마 카테고리(tno)로 상품 목록 조회
-    @GetMapping("/list/theme")
-    public ResponseEntity<PageResponseDTO<ProductListDTO>> listByTheme(@RequestParam Long tno, @Validated PageRequestDTO requestDTO) {
-        log.info("테마 카테고리 ID(tno)로 상품 목록을 조회합니다: {}", tno);
-
-        PageResponseDTO<ProductListDTO> response = productService.listByTheme(tno, requestDTO);
-        log.info("테마 카테고리별 상품 목록 응답: {}", response);
-
-        return ResponseEntity.ok(response);
-    }
 }
