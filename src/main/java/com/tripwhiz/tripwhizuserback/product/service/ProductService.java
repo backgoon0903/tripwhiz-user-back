@@ -1,5 +1,9 @@
 package com.tripwhiz.tripwhizuserback.product.service;
 
+import com.tripwhiz.tripwhizuserback.category.domain.Category;
+import com.tripwhiz.tripwhizuserback.category.domain.SubCategory;
+import com.tripwhiz.tripwhizuserback.category.repository.CategoryRepository;
+import com.tripwhiz.tripwhizuserback.category.repository.SubCategoryRepository;
 import com.tripwhiz.tripwhizuserback.common.dto.PageRequestDTO;
 import com.tripwhiz.tripwhizuserback.common.dto.PageResponseDTO;
 import com.tripwhiz.tripwhizuserback.product.domain.Product;
@@ -27,6 +31,8 @@ import java.util.stream.Collectors;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final SubCategoryRepository subCategoryRepository;
 
     // 상품 목록 조회
     public PageResponseDTO<ProductListDTO> getList(PageRequestDTO pageRequestDTO) {
@@ -125,6 +131,57 @@ public class ProductService {
                 .build();
     }
 
+
+    // 상품 생성
+    public Long createProduct(ProductListDTO productListDTO) {
+        // Category와 SubCategory를 조회
+        Category category = categoryRepository.findById(productListDTO.getCategoryCno())
+                .orElseThrow(() -> new RuntimeException("Category not found with ID: " + productListDTO.getCategoryCno()));
+        SubCategory subCategory = subCategoryRepository.findById(productListDTO.getSubCategoryScno())
+                .orElseThrow(() -> new RuntimeException("SubCategory not found with ID: " + productListDTO.getSubCategoryScno()));
+
+        // toEntity 호출 시 Category와 SubCategory 전달
+        Product product = productListDTO.toEntity(category, subCategory);
+
+        Product savedProduct = productRepository.save(product);
+        log.info("Product created with ID: {}", savedProduct.getPno());
+        return savedProduct.getPno();
+    }
+
+    // 상품 수정
+    public Long updateProduct(Long pno, ProductListDTO productListDTO) {
+        // Product 조회
+        Product product = productRepository.findById(pno)
+                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + pno));
+
+        // Category와 SubCategory를 조회
+        Category category = categoryRepository.findById(productListDTO.getCategoryCno())
+                .orElseThrow(() -> new RuntimeException("Category not found with ID: " + productListDTO.getCategoryCno()));
+        SubCategory subCategory = subCategoryRepository.findById(productListDTO.getSubCategoryScno())
+                .orElseThrow(() -> new RuntimeException("SubCategory not found with ID: " + productListDTO.getSubCategoryScno()));
+
+        // updateFromDTO 호출
+        product.updateFromDTO(productListDTO, category, subCategory);
+
+        productRepository.save(product);
+        log.info("Product updated with ID: {}", pno);
+        return pno;
+    }
+
+    // 상품 삭제
+    public void deleteProduct(Long pno) {
+        // Product 조회
+        Product product = productRepository.findById(pno)
+                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + pno));
+
+        // 삭제 처리
+        productRepository.delete(product);
+        log.info("Product deleted with ID: {}", pno);
+    }
+}
+
+
+
     // 상품 정보와 이미지를 함께 조회
 //    public Optional<ProductReadDTO> getProductWithImage(Long pno) {
 //        log.info("ID로 상품 및 이미지를 조회합니다: {}", pno);
@@ -157,4 +214,4 @@ public class ProductService {
 //
 //        log.info("Product saved successfully: {}", product);
 //    }
-}
+

@@ -65,4 +65,30 @@ public class ProductController {
                 });
     }
 
+
+
+    // 상품 생성
+    @PostMapping("/add")
+    public ResponseEntity<Long> createProduct(@RequestBody ProductListDTO productListDTO) {
+        log.info("Received product creation request: {}", productListDTO);
+        Long productId = productService.createProduct(productListDTO);
+        return ResponseEntity.ok(productId);
+    }
+
+    // 상품 수정
+    @PutMapping("/update/{pno}")
+    public ResponseEntity<Long> updateProduct(@PathVariable Long pno, @RequestBody ProductListDTO productListDTO) {
+        log.info("Received product update request for PNO {}: {}", pno, productListDTO);
+        Long updatedProductPno = productService.updateProduct(pno, productListDTO);
+        return ResponseEntity.ok(updatedProductPno);
+    }
+
+    // 상품 삭제
+    @DeleteMapping("/delete/{pno}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long pno) {
+        log.info("Received product deletion request for PNO {}", pno);
+        productService.deleteProduct(pno);
+        return ResponseEntity.ok().build();
+    }
+
 }

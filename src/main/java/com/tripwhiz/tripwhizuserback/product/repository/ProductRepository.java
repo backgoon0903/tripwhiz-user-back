@@ -18,7 +18,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
 
 //    전체 상품 목록 조회
     @Query("SELECT new com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO(" +
-            "p.pno, p.pname, p.price, p.category.cno, p.subCategory.scno) " +
+            "p.pno, p.pdesc ,p.pname, p.price, p.category.cno, p.subCategory.scno) " +
             "FROM Product p " +
             "ORDER BY p.pno DESC")
     Page<ProductListDTO> allProductList(Pageable pageable);
@@ -36,7 +36,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
 
     // 상위 카테고리를 기준으로 상품 조회
     @Query("SELECT new com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO(" +
-           "p.pno, p.pname, p.price, p.category.cno, p.subCategory.scno) " +
+           "p.pno, p.pname, p.pdesc ,p.price, p.category.cno, p.subCategory.scno) " +
            "FROM Product p " +
            "WHERE p.category.cno = :cno " +
            "ORDER BY p.pno DESC")
@@ -44,7 +44,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
 
     // 상위 & 하위 카테고리를 기준으로 상품 조회
     @Query("SELECT new com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO(" +
-           "p.pno, p.pname, p.price, p.category.cno, p.subCategory.scno) " +
+           "p.pno, p.pname, p.pdesc ,p.price, p.category.cno, p.subCategory.scno) " +
            "FROM Product p " +
            "WHERE p.category.cno = :cno AND p.subCategory.scno = :scno " +
            "ORDER BY p.pno DESC")
@@ -53,7 +53,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
 
     // 테마 카테고리 tno를 기준으로 상품 조회
     @Query("SELECT new com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO(" +
-            "p.pno, p.pname, p.price, p.category.cno, p.subCategory.scno) " +
+            "p.pno, p.pname, p.pdesc ,p.price, p.category.cno, p.subCategory.scno) " +
             "FROM Product p " +
             "LEFT JOIN ProductTheme pt ON p.pno = pt.product.pno " +
             "LEFT JOIN ThemeCategory tc ON pt.themeCategory.tno = tc.tno " +

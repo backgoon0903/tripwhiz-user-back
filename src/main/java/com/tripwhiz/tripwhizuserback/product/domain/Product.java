@@ -2,6 +2,7 @@ package com.tripwhiz.tripwhizuserback.product.domain;
 
 import com.tripwhiz.tripwhizuserback.category.domain.Category;
 import com.tripwhiz.tripwhizuserback.category.domain.SubCategory;
+import com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -54,6 +55,14 @@ public class Product {
 
     // 하위 카테고리 설정 메서드
     public void setSubCategory(SubCategory subCategory) {
+        this.subCategory = subCategory;
+    }
+
+    public void updateFromDTO(ProductListDTO dto, Category category, SubCategory subCategory) {
+        this.pname = dto.getPname();
+        this.price = dto.getPrice();
+        this.pdesc = dto.getPdesc();
+        this.category = category;
         this.subCategory = subCategory;
     }
 
