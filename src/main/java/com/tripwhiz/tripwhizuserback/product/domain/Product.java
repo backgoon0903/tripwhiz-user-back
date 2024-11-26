@@ -2,8 +2,12 @@ package com.tripwhiz.tripwhizuserback.product.domain;
 
 import com.tripwhiz.tripwhizuserback.category.domain.Category;
 import com.tripwhiz.tripwhizuserback.category.domain.SubCategory;
+import com.tripwhiz.tripwhizuserback.util.file.domain.AttachFile;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -29,6 +33,14 @@ public class Product {
 
     private boolean delFlag;
 
+    // JH
+    @ElementCollection
+    @CollectionTable(
+            name = "product_images", // 연결 테이블 이름
+            joinColumns = @JoinColumn(name = "pno") // 외래 키 이름 지정
+    )
+    @Builder.Default
+    private List<AttachFile> attachFiles = new ArrayList<>();
 
     // 상위 카테고리와의 관계 설정
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,7 +58,6 @@ public class Product {
         this.delFlag = newDelFlag;
     }
 
-
     // 상위 카테고리 설정 메서드
     public void setCategory(Category category) {
         this.category = category;
@@ -57,5 +68,12 @@ public class Product {
         this.subCategory = subCategory;
     }
 
+    // JH
+    public void addAttachFile(AttachFile attachFile) {
+        if (this.attachFiles == null) {
+            this.attachFiles = new ArrayList<>();
+        }
+        this.attachFiles.add(attachFile);
+    }
 
 }
