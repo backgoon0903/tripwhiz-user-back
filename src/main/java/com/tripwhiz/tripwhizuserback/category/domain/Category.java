@@ -20,7 +20,6 @@ public class Category {
     @Column(nullable = false)
     private ParentCategory parentCategory;
 
-
     private boolean delFlag;
 
 }
