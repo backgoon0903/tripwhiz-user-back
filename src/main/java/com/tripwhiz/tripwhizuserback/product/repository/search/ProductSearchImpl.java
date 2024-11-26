@@ -41,19 +41,19 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         query.groupBy(product);
 
         // 페이징 적용
-        this.getQuerydsl().applyPagination(pageable, query);
+        List<Product> productList = getQuerydsl().applyPagination(pageable, query)
+                .select(product)
+                .fetch();
 
         // DTO 변환
-//        List<ProductListDTO> dtoList = productList.stream()
-//                .map(this::convertToDto)
-//                .collect(Collectors.toList());
+        List<ProductListDTO> dtoList = productList.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
 
         // 총 개수 조회
-//        long total = query.fetchCount();
+        long total = query.fetchCount();
 
-//        return new PageImpl<>(dtoList, pageable, total);
-
-        return null;
+        return new PageImpl<>(dtoList, pageable, total);
     }
 
     @Override
