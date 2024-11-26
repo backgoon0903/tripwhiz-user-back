@@ -5,24 +5,17 @@ import com.tripwhiz.tripwhizuserback.category.domain.SubCategory;
 import com.tripwhiz.tripwhizuserback.category.repository.CategoryRepository;
 import com.tripwhiz.tripwhizuserback.category.repository.SubCategoryRepository;
 import com.tripwhiz.tripwhizuserback.common.dto.PageRequestDTO;
-import com.tripwhiz.tripwhizuserback.common.dto.PageResponseDTO;
-import com.tripwhiz.tripwhizuserback.product.domain.Product;
 import com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO;
 import com.tripwhiz.tripwhizuserback.product.dto.ProductReadDTO;
 import com.tripwhiz.tripwhizuserback.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -35,27 +28,12 @@ public class ProductService {
     private final SubCategoryRepository subCategoryRepository;
 
     // 상품 목록 조회
-    public PageResponseDTO<ProductListDTO> getList(PageRequestDTO pageRequestDTO) {
+    public Page<ProductListDTO> getList(PageRequestDTO pageRequestDTO) {
+
         log.info("페이지 요청에 따라 상품 목록을 조회합니다: {}", pageRequestDTO);
 
-        Pageable pageable = PageRequest.of(
-                pageRequestDTO.getPage() - 1,
-                pageRequestDTO.getSize(),
-                Sort.by(Sort.Direction.DESC, "pno") // pno를 기준으로 내림차순 정렬
-        );
+        return productRepository.list(pageRequestDTO);
 
-        Page<Product> productPage = productRepository.findAll(pageable);
-
-        if (productPage.isEmpty()) {
-            log.warn("조회된 상품이 없습니다.");
-            return new PageResponseDTO<>(List.of(), pageRequestDTO, 0);
-        }
-
-        List<ProductListDTO> dtoList = productPage.stream()
-                .map(this::entityToDto)
-                .collect(Collectors.toList());
-
-        return new PageResponseDTO<>(dtoList, pageRequestDTO, productPage.getTotalElements());
     }
 
     // 상품 ID로 단일 상품 조회
@@ -65,71 +43,38 @@ public class ProductService {
     }
 
     // 상위 카테고리(cno)로 상품 목록 조회
-    public PageResponseDTO<ProductListDTO> listByCategory(Long cno, PageRequestDTO requestDTO) {
+    public Page<ProductListDTO> listByCategory(Long cno, PageRequestDTO pageRequestDTO) {
         log.info("카테고리 ID(cno)로 상품 목록을 조회합니다: {}", cno);
 
-        Pageable pageable = PageRequest.of(
-                requestDTO.getPage() - 1,
-                requestDTO.getSize(),
-                Sort.by(Sort.Direction.DESC, "pno") // pno를 기준으로 내림차순 정렬
-        );
+        return productRepository.findByCategory(cno, pageRequestDTO);
 
-        Page<ProductListDTO> products = productRepository.findByCategory(cno, pageable);
-
-        if (products.isEmpty()) {
-            log.warn("해당 카테고리에 상품이 없습니다: {}", cno);
-            return new PageResponseDTO<>(List.of(), requestDTO, 0);
-        }
-
-        return new PageResponseDTO<>(products.getContent(), requestDTO, products.getTotalElements());
     }
 
-
     // cno와 하위 카테고리(scno)로 상품 목록 조회
-    public PageResponseDTO<ProductListDTO> listByCategoryAndSubCategory(Long cno, Long scno, PageRequestDTO requestDTO) {
+    public Page<ProductListDTO> listByCategoryAndSubCategory(Long cno, Long scno, PageRequestDTO pageRequestDTO) {
         log.info("카테고리 ID(cno)와 하위 카테고리 ID(scno)로 상품 목록을 조회합니다: {}, {}", cno, scno);
 
-        Pageable pageable = PageRequest.of(
-                requestDTO.getPage() - 1,
-                requestDTO.getSize(),
-                Sort.by(Sort.Direction.DESC, "pno") // pno를 기준으로 내림차순 정렬
-        );
+        return productRepository.findByCategoryAndSubCategory(cno, scno, pageRequestDTO);
 
-        Page<ProductListDTO> products = productRepository.findByCategoryAndSubCategory(cno, scno, pageable);
-
-        if (products.isEmpty()) {
-            log.warn("해당 카테고리와 하위 카테고리에 상품이 없습니다: {}, {}", cno, scno);
-            return new PageResponseDTO<>(List.of(), requestDTO, 0);
-        }
-
-        return new PageResponseDTO<>(products.getContent(), requestDTO, products.getTotalElements());
     }
 
     // 테마 카테고리(tno)로 상품 목록 조회
-    public PageResponseDTO<ProductListDTO> listByTheme(Optional<Long> tno, PageRequestDTO pagerequestDTO) {
+    public Page<ProductListDTO> listByTheme(Optional<Long> tno, PageRequestDTO pageRequestDTO) {
         log.info("테마 카테고리 ID(tno)로 상품 목록을 조회합니다: {}", tno);
 
-        Pageable pageable = PageRequest.of(
-                pagerequestDTO.getPage() - 1,
-                pagerequestDTO.getSize(),
-                Sort.by(Sort.Direction.DESC, "pno") // pno를 기준으로 내림차순 정렬
-        );
+        return productRepository.findByThemeCategory(tno, pageRequestDTO);
 
-        //테마 선택 여부에 따라 상품 조회
-        Page<ProductListDTO> products = productRepository.findByThemeCategory(tno.orElse(null), pageable);
-
-        return new PageResponseDTO<>(products.getContent(), pagerequestDTO, products.getTotalElements());
     }
 
-    private ProductListDTO entityToDto(Product product) {
-        return ProductListDTO.builder()
-                .pno(product.getPno())
-                .pname(product.getPname())
-                .price(product.getPrice())
-                .categoryCno(product.getCategory() != null ? product.getCategory().getCno() : null)
-                .subCategoryScno(product.getSubCategory() != null ? product.getSubCategory().getScno() : null)
-                .build();
-    }
+//    private ProductListDTO entityToDto(Product product) {
+//        return ProductListDTO.builder()
+//                .pno(product.getPno())
+//                .pname(product.getPname())
+//                .price(product.getPrice())
+//                .categoryCno(product.getCategory() != null ? product.getCategory().getCno() : null)
+//                .subCategoryScno(product.getSubCategory() != null ? product.getSubCategory().getScno() : null)
+//                .build();
+//    }
 
 
     // 상품 생성

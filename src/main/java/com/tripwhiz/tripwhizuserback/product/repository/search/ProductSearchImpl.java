@@ -2,7 +2,6 @@ package com.tripwhiz.tripwhizuserback.product.repository.search;
 
 import com.querydsl.jpa.JPQLQuery;
 import com.tripwhiz.tripwhizuserback.common.dto.PageRequestDTO;
-import com.tripwhiz.tripwhizuserback.common.dto.PageResponseDTO;
 import com.tripwhiz.tripwhizuserback.product.domain.Product;
 import com.tripwhiz.tripwhizuserback.product.domain.QProduct;
 import com.tripwhiz.tripwhizuserback.product.domain.QProductTheme;
@@ -24,7 +23,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         super(Product.class);
     }
 
-    //전체 상품 목록 조회
+    //전체 상품 목록 조회(다 스킵했을 때)
     @Override
     public Page<ProductListDTO> list(PageRequestDTO pageRequestDTO) {
         log.info("-------------------list-----------");
@@ -37,6 +36,9 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         QProduct product = QProduct.product;
         JPQLQuery<Product> query = from(product);
+
+        query.leftJoin(product.attachFiles).fetchJoin();
+        query.groupBy(product);
 
         // 페이징 적용
         List<Product> productList = getQuerydsl().applyPagination(pageable, query)
@@ -54,7 +56,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         return new PageImpl<>(dtoList, pageable, total);
     }
 
-
+    @Override
     public Page<ProductListDTO> findByCategory(Long cno, PageRequestDTO pageRequestDTO) {
 
         log.info("Fetching product list by category ID: {}", cno);
@@ -69,7 +71,9 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         QProduct product = QProduct.product;
 
         JPQLQuery<Product> query = from(product)
-                .where(product.category.cno.eq(cno));
+                .leftJoin(product.attachFiles).fetchJoin()
+                .where(product.category.cno.eq(cno))
+                .groupBy(product);
 
         // 페이징 적용
         List<Product> productList = getQuerydsl().applyPagination(pageable, query)
@@ -89,6 +93,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
     @Override
     public Page<ProductListDTO> findByCategoryAndSubCategory(Long cno, Long scno, PageRequestDTO pageRequestDTO) {
+
         log.info("Fetching product list by category ID: {} and sub-category ID: {}", cno, scno);
 
         Pageable pageable = PageRequest.of(
@@ -100,8 +105,8 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         QProduct product = QProduct.product;
 
         JPQLQuery<Product> query = from(product)
+                .leftJoin(product.attachFiles).fetchJoin()
                 .where(product.category.cno.eq(cno).and(product.subCategory.scno.eq(scno)));
-
 
         // 페이징 적용
         List<Product> productList = getQuerydsl().applyPagination(pageable, query)
@@ -122,6 +127,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
     @Override
     public Page<ProductListDTO> findByThemeCategory(Optional<Long> tno, PageRequestDTO pageRequestDTO) {
+
         log.info("Fetching product list by theme category ID: {}", tno);
 
         Pageable pageable = PageRequest.of(
@@ -136,6 +142,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
 
         // Product와 ThemeCategory를 연결하는 쿼리 작성
         JPQLQuery<Product> query = from(product)
+                .leftJoin(product.attachFiles).fetchJoin()
                 .innerJoin(productTheme).on(product.eq(productTheme.product))
                 .innerJoin(themeCategory).on(productTheme.themeCategory.eq(themeCategory));
 
