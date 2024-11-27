@@ -2,6 +2,7 @@ package com.tripwhiz.tripwhizuserback.product.domain;
 
 import com.tripwhiz.tripwhizuserback.category.domain.Category;
 import com.tripwhiz.tripwhizuserback.category.domain.SubCategory;
+import com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO;
 import com.tripwhiz.tripwhizuserback.util.file.domain.AttachFile;
 import jakarta.persistence.*;
 import lombok.*;

@@ -5,6 +5,7 @@ import com.tripwhiz.tripwhizuserback.category.domain.SubCategory;
 import com.tripwhiz.tripwhizuserback.category.repository.CategoryRepository;
 import com.tripwhiz.tripwhizuserback.category.repository.SubCategoryRepository;
 import com.tripwhiz.tripwhizuserback.common.dto.PageRequestDTO;
+import com.tripwhiz.tripwhizuserback.product.domain.Product;
 import com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO;
 import com.tripwhiz.tripwhizuserback.product.dto.ProductReadDTO;
 import com.tripwhiz.tripwhizuserback.product.repository.ProductRepository;
