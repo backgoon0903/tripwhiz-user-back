@@ -16,7 +16,7 @@ public class ProductReadDTO {
     private String pname;            // 상품 이름
     private String pdesc;            // 상품 설명
     private int price;               // 상품 가격
-    private Long categoryCno;        // 상위 카테고리 ID
-    private Long subCategoryScno;    // 하위 카테고리 ID
+    private Long cno;        // 상위 카테고리 ID
+    private Long scno;    // 하위 카테고리 ID
 
 }
