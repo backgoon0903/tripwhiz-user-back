@@ -1,7 +1,9 @@
 package com.tripwhiz.tripwhizuserback.product.repository.search;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPQLQuery;
 import com.tripwhiz.tripwhizuserback.common.dto.PageRequestDTO;
+import com.tripwhiz.tripwhizuserback.common.dto.PageResponseDTO;
 import com.tripwhiz.tripwhizuserback.product.domain.Product;
 import com.tripwhiz.tripwhizuserback.product.domain.QProduct;
 import com.tripwhiz.tripwhizuserback.product.domain.QProductTheme;
@@ -24,133 +26,184 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
     }
 
     //전체 상품 목록 조회(다 스킵했을 때)
-    @Override
-    public Page<ProductListDTO> list(PageRequestDTO pageRequestDTO) {
-        log.info("-------------------list-----------");
+//    @Override
+//    public Page<ProductListDTO> list(PageRequestDTO pageRequestDTO) {
+//        log.info("-------------------list-----------");
+//
+//        Pageable pageable = PageRequest.of(
+//                pageRequestDTO.getPage() - 1,
+//                pageRequestDTO.getSize(),
+//                Sort.by("pno").descending()
+//        );
+//
+//        QProduct product = QProduct.product;
+//        JPQLQuery<Product> query = from(product);
+//
+//        query.leftJoin(product.attachFiles).fetchJoin();
+//        query.groupBy(product);
+//
+//        // 페이징 적용
+//        List<Product> productList = getQuerydsl().applyPagination(pageable, query)
+//                .select(product)
+//                .fetch();
+//
+//        // DTO 변환
+//        List<ProductListDTO> dtoList = productList.stream()
+//                .map(this::convertToDto)
+//                .collect(Collectors.toList());
+//
+//        // 총 개수 조회
+//        long total = query.fetchCount();
+//
+//        return new PageImpl<>(dtoList, pageable, total);
+//    }
 
+//    @Override
+//    public Page<ProductListDTO> findByCategory(Long cno, PageRequestDTO pageRequestDTO) {
+//
+//        log.info("Fetching product list by category ID: {}", cno);
+//
+//        Pageable pageable = PageRequest.of(
+//                pageRequestDTO.getPage() - 1, // 클라이언트는 1부터 시작하지만 Pageable은 0부터 시작하므로 -1
+//                pageRequestDTO.getSize(),  // 페이지 크기 설정
+//                Sort.by("pno").descending()
+//        );
+//
+//        // Querydsl로 Product 엔티티를 조회하기 위해 QProduct 객체 생성
+//        QProduct product = QProduct.product;
+//
+//        JPQLQuery<Product> query = from(product)
+//                .leftJoin(product.attachFiles).fetchJoin()
+//                .where(product.category.cno.eq(cno))
+//                .groupBy(product);
+//
+//        // 페이징 적용
+//        List<Product> productList = getQuerydsl().applyPagination(pageable, query)
+//                .select(product)
+//                .fetch();
+//
+//        // DTO 변환
+//        List<ProductListDTO> dtoList = productList.stream()
+//                .map(this::convertToDto)
+//                .collect(Collectors.toList());
+//
+//        // 총 개수 조회
+//        long total = query.fetchCount();
+//
+//        return new PageImpl<>(dtoList, pageable, total);
+//    }
+
+//    @Override
+//    public Page<ProductListDTO> findByCategoryAndSubCategory(Long cno, Long scno, PageRequestDTO pageRequestDTO) {
+//
+//        log.info("Fetching product list by category ID: {} and sub-category ID: {}", cno, scno);
+//
+//        Pageable pageable = PageRequest.of(
+//                pageRequestDTO.getPage() - 1,
+//                pageRequestDTO.getSize(),
+//                Sort.by("pno").descending()
+//        );
+//
+//        QProduct product = QProduct.product;
+//
+//        JPQLQuery<Product> query = from(product)
+//                .leftJoin(product.attachFiles).fetchJoin()
+//                .where(product.category.cno.eq(cno).and(product.subCategory.scno.eq(scno)));
+//
+//        // 페이징 적용
+//        List<Product> productList = getQuerydsl().applyPagination(pageable, query)
+//                .select(product)
+//                .fetch();
+//
+//        // DTO 변환
+//        List<ProductListDTO> dtoList = productList.stream()
+//                .map(this::convertToDto)
+//                .collect(Collectors.toList());
+//
+//        // 총 개수 조회
+//        long total = query.fetchCount();
+//
+//        return new PageImpl<>(dtoList, pageable, total);
+//    }
+
+
+//    @Override
+//    public Page<ProductListDTO> findByThemeCategory(Optional<Long> tno, PageRequestDTO pageRequestDTO) {
+//
+//        log.info("Fetching product list by theme category ID: {}", tno);
+//
+//        Pageable pageable = PageRequest.of(
+//                pageRequestDTO.getPage() - 1,
+//                pageRequestDTO.getSize(),
+//                Sort.by("pno").descending()
+//        );
+//
+//        QProduct product = QProduct.product;
+//        QProductTheme productTheme = QProductTheme.productTheme;
+//        QThemeCategory themeCategory = QThemeCategory.themeCategory;
+//
+//        // Product와 ThemeCategory를 연결하는 쿼리 작성
+//        JPQLQuery<Product> query = from(product)
+//                .leftJoin(product.attachFiles).fetchJoin()
+//                .innerJoin(productTheme).on(product.eq(productTheme.product))
+//                .innerJoin(themeCategory).on(productTheme.themeCategory.eq(themeCategory));
+//
+//        //tno가 존재하면 필터 조건 추가
+//        tno.ifPresent(theme -> query.where(themeCategory.tno.eq(theme)));
+//
+//
+//        // 페이징 적용 및 데이터 조회
+//        List<Product> productList = getQuerydsl().applyPagination(pageable, query)
+//                .select(product)
+//                .fetch();
+//
+//        // DTO 변환
+//        List<ProductListDTO> dtoList = productList.stream()
+//                .map(this::convertToDto)
+//                .collect(Collectors.toList());
+//
+//        // 총 개수 조회
+//        long total = query.fetchCount();
+//
+//        return new PageImpl<>(dtoList, pageable, total);
+//    }
+
+    @Override
+    public PageResponseDTO<ProductListDTO> findByFiltering(Long tno, Long cno, Long scno, PageRequestDTO pageRequestDTO) {
+        log.info("-------------------list with filters-----------");
+        log.info("Filters: tno = {}, cno = {}, scno = {}", tno, cno, scno);
+
+        // 페이징 설정
         Pageable pageable = PageRequest.of(
                 pageRequestDTO.getPage() - 1,
                 pageRequestDTO.getSize(),
                 Sort.by("pno").descending()
         );
 
-        QProduct product = QProduct.product;
-        JPQLQuery<Product> query = from(product);
-
-        query.leftJoin(product.attachFiles).fetchJoin();
-        query.groupBy(product);
-
-        // 페이징 적용
-        List<Product> productList = getQuerydsl().applyPagination(pageable, query)
-                .select(product)
-                .fetch();
-
-        // DTO 변환
-        List<ProductListDTO> dtoList = productList.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-
-        // 총 개수 조회
-        long total = query.fetchCount();
-
-        return new PageImpl<>(dtoList, pageable, total);
-    }
-
-    @Override
-    public Page<ProductListDTO> findByCategory(Long cno, PageRequestDTO pageRequestDTO) {
-
-        log.info("Fetching product list by category ID: {}", cno);
-
-        Pageable pageable = PageRequest.of(
-                pageRequestDTO.getPage() - 1, // 클라이언트는 1부터 시작하지만 Pageable은 0부터 시작하므로 -1
-                pageRequestDTO.getSize(),  // 페이지 크기 설정
-                Sort.by("pno").descending()
-        );
-
-        // Querydsl로 Product 엔티티를 조회하기 위해 QProduct 객체 생성
-        QProduct product = QProduct.product;
-
-        JPQLQuery<Product> query = from(product)
-                .leftJoin(product.attachFiles).fetchJoin()
-                .where(product.category.cno.eq(cno))
-                .groupBy(product);
-
-        // 페이징 적용
-        List<Product> productList = getQuerydsl().applyPagination(pageable, query)
-                .select(product)
-                .fetch();
-
-        // DTO 변환
-        List<ProductListDTO> dtoList = productList.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-
-        // 총 개수 조회
-        long total = query.fetchCount();
-
-        return new PageImpl<>(dtoList, pageable, total);
-    }
-
-    @Override
-    public Page<ProductListDTO> findByCategoryAndSubCategory(Long cno, Long scno, PageRequestDTO pageRequestDTO) {
-
-        log.info("Fetching product list by category ID: {} and sub-category ID: {}", cno, scno);
-
-        Pageable pageable = PageRequest.of(
-                pageRequestDTO.getPage() - 1,
-                pageRequestDTO.getSize(),
-                Sort.by("pno").descending()
-        );
-
-        QProduct product = QProduct.product;
-
-        JPQLQuery<Product> query = from(product)
-                .leftJoin(product.attachFiles).fetchJoin()
-                .where(product.category.cno.eq(cno).and(product.subCategory.scno.eq(scno)));
-
-        // 페이징 적용
-        List<Product> productList = getQuerydsl().applyPagination(pageable, query)
-                .select(product)
-                .fetch();
-
-        // DTO 변환
-        List<ProductListDTO> dtoList = productList.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-
-        // 총 개수 조회
-        long total = query.fetchCount();
-
-        return new PageImpl<>(dtoList, pageable, total);
-    }
-
-
-    @Override
-    public Page<ProductListDTO> findByThemeCategory(Optional<Long> tno, PageRequestDTO pageRequestDTO) {
-
-        log.info("Fetching product list by theme category ID: {}", tno);
-
-        Pageable pageable = PageRequest.of(
-                pageRequestDTO.getPage() - 1,
-                pageRequestDTO.getSize(),
-                Sort.by("pno").descending()
-        );
-
+        // Q 클래스 인스턴스 생성
         QProduct product = QProduct.product;
         QProductTheme productTheme = QProductTheme.productTheme;
         QThemeCategory themeCategory = QThemeCategory.themeCategory;
 
-        // Product와 ThemeCategory를 연결하는 쿼리 작성
+        // 기본 쿼리 작성
         JPQLQuery<Product> query = from(product)
-                .leftJoin(product.attachFiles).fetchJoin()
-                .innerJoin(productTheme).on(product.eq(productTheme.product))
-                .innerJoin(themeCategory).on(productTheme.themeCategory.eq(themeCategory));
+                .leftJoin(productTheme).on(productTheme.product.eq(product))
+                .leftJoin(themeCategory).on(productTheme.themeCategory.eq(themeCategory));
 
-        //tno가 존재하면 필터 조건 추가
-        tno.ifPresent(theme -> query.where(themeCategory.tno.eq(theme)));
+        // 동적 조건 추가
+        BooleanBuilder whereClause = new BooleanBuilder();
+        if (tno != null) {
+            whereClause.and(themeCategory.tno.eq(tno));
+        }
+        if (cno != null) {
+            whereClause.and(product.category.cno.eq(cno));
+        }
+        if (scno != null) {
+            whereClause.and(product.subCategory.scno.eq(scno));
+        }
+        query.where(whereClause);
 
-
-        // 페이징 적용 및 데이터 조회
+        // 페이징 및 결과 조회
         List<Product> productList = getQuerydsl().applyPagination(pageable, query)
                 .select(product)
                 .fetch();
@@ -163,8 +216,15 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         // 총 개수 조회
         long total = query.fetchCount();
 
-        return new PageImpl<>(dtoList, pageable, total);
+        return PageResponseDTO.<ProductListDTO>withAll()
+                .dtoList(dtoList)
+                .pageRequestDTO(pageRequestDTO)
+                .totalCount(total)
+                .build();
+
     }
+
+
 
 
     private ProductListDTO convertToDto(Product product) {
@@ -172,8 +232,8 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
                 .pno(product.getPno())
                 .pname(product.getPname())
                 .price(product.getPrice())
-                .categoryCno(product.getCategory() != null ? product.getCategory().getCno() : null)
-                .subCategoryScno(product.getSubCategory() != null ? product.getSubCategory().getScno() : null)
+                .cno(product.getCategory() != null ? product.getCategory().getCno() : null)
+                .scno(product.getSubCategory() != null ? product.getSubCategory().getScno() : null)
                 .build();
     }
 
