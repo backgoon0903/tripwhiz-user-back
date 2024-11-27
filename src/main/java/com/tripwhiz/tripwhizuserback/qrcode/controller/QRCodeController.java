@@ -1,6 +1,8 @@
 package com.tripwhiz.tripwhizuserback.qrcode.controller;
 
 import com.tripwhiz.tripwhizuserback.qrcode.service.QRService;
+import com.tripwhiz.tripwhizuserback.util.file.domain.AttachFile;
+import com.tripwhiz.tripwhizuserback.util.file.service.UploadService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -14,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -21,7 +24,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class QRCodeController {
 
-    private final QRService qrService; // QR 코드 생성을 담당하는 서비스 객체
+    private final QRService qrService;// QR 코드 생성을 담당하는 서비스 객체
+    private final UploadService uploadService;
 
     @Value("${com.tripwhiz.upload.qrpath}")
     private String qrImagePath;
@@ -30,6 +34,7 @@ public class QRCodeController {
     @PostMapping("/complete")
     public Map<String, String> completeOrder(@RequestParam String ono, @RequestParam int totalAmount) throws Exception {
         // QR 코드 생성 요청 및 결과를 반환할 데이터 맵 초기화
+        List<AttachFile> attachFiles = uploadService.uploadFiles(files);
         String qrCodeBase64 = qrService.generateQRCode(ono, totalAmount);
 
         // 응답 메시지 및 QR 코드 Base64 문자열 포함

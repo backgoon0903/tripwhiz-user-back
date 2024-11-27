@@ -4,7 +4,7 @@ spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
 
-#    url: jdbc:mariadb://10.10.10.217:13306/tripwhiz
+    #    url: jdbc:mariadb://10.10.10.217:13306/tripwhiz
     url: jdbc:mariadb://localhost:13306/tripwhiz
     username: debugger
     password: debugger
@@ -37,7 +37,7 @@ com:
     alwaysNew: true
     upload:
       path: /c/upload/attach  # image upload path
-      qrpath: qrimages
+      qrpath: C:\\upload/qrcode
 
 logging:
   level:
