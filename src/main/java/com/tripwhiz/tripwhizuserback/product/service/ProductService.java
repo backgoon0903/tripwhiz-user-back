@@ -13,7 +13,7 @@ import com.tripwhiz.tripwhizuserback.product.dto.ProductReadDTO;
 import com.tripwhiz.tripwhizuserback.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.domain.Page;
+
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,14 +30,6 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final SubCategoryRepository subCategoryRepository;
 
-    // 상품 목록 조회
-//    public Page<ProductListDTO> getList(PageRequestDTO pageRequestDTO) {
-//
-//        log.info("페이지 요청에 따라 상품 목록을 조회합니다: {}", pageRequestDTO);
-//
-//        return productRepository.list(pageRequestDTO);
-//
-//    }
 
     // 상품 ID로 단일 상품 조회
     public Optional<ProductReadDTO> getProductById(Long pno) {
@@ -54,40 +46,6 @@ public class ProductService {
         return productRepository.findByFiltering(tno, cno, scno, pageRequestDTO);
     }
 
-
-    // 상위 카테고리(cno)로 상품 목록 조회
-//    public Page<ProductListDTO> listByCategory(Long cno, PageRequestDTO pageRequestDTO) {
-//        log.info("카테고리 ID(cno)로 상품 목록을 조회합니다: {}", cno);
-//
-//        return productRepository.findByCategory(cno, pageRequestDTO);
-//
-//    }
-
-    // cno와 하위 카테고리(scno)로 상품 목록 조회
-//    public Page<ProductListDTO> listByCategoryAndSubCategory(Long cno, Long scno, PageRequestDTO pageRequestDTO) {
-//        log.info("카테고리 ID(cno)와 하위 카테고리 ID(scno)로 상품 목록을 조회합니다: {}, {}", cno, scno);
-//
-//        return productRepository.findByCategoryAndSubCategory(cno, scno, pageRequestDTO);
-//
-//    }
-
-    // 테마 카테고리(tno)로 상품 목록 조회
-//    public Page<ProductListDTO> listByTheme(Optional<Long> tno, PageRequestDTO pageRequestDTO) {
-//        log.info("테마 카테고리 ID(tno)로 상품 목록을 조회합니다: {}", tno);
-//
-//        return productRepository.findByThemeCategory(tno, pageRequestDTO);
-//
-//    }
-
-//    private ProductListDTO entityToDto(Product product) {
-//        return ProductListDTO.builder()
-//                .pno(product.getPno())
-//                .pname(product.getPname())
-//                .price(product.getPrice())
-//                .categoryCno(product.getCategory() != null ? product.getCategory().getCno() : null)
-//                .subCategoryScno(product.getSubCategory() != null ? product.getSubCategory().getScno() : null)
-//                .build();
-//    }
 
 
     // 상품 생성
