@@ -24,29 +24,31 @@ public class ProductController {
 
     // 상품 목록 조회
     @GetMapping("/list")
-    public ResponseEntity<Page<ProductListDTO>> list(
+    public ResponseEntity<PageResponseDTO<ProductListDTO>> list(
             @RequestParam(required = false) Long tno,
             @RequestParam(required = false) Long cno,
             @RequestParam(required = false) Long scno,
             @Validated PageRequestDTO pageRequestDTO) {
         log.info("상품 목록을 조회합니다. tno: {}, cno: {}, scno: {}", tno, cno, scno);
 
-        Page<ProductListDTO> response;
+//        Page<ProductListDTO> response;
 
-        if (tno != null) {
-            // 테마로 필터링
-            Optional<Long> optionalTno = Optional.ofNullable(tno);
-            response = productService.listByTheme(optionalTno, pageRequestDTO);
-        } else if (cno != null && scno != null) {
-            // 상위 카테고리와 하위 카테고리로 필터링
-            response = productService.listByCategoryAndSubCategory(cno, scno, pageRequestDTO);
-        } else if (cno != null) {
-            // 상위 카테고리로 필터링
-            response = productService.listByCategory(cno, pageRequestDTO);
-        } else {
-            // 전체 목록 조회 (기존에 이런 메소드가 없다면, 여기에 추가)
-            response = productService.getList(pageRequestDTO);
-        }
+//        if (tno != null) {
+//            // 테마로 필터링
+//            Optional<Long> optionalTno = Optional.ofNullable(tno);
+//            response = productService.listByTheme(optionalTno, pageRequestDTO);
+//        } else if (cno != null && scno != null) {
+//            // 상위 카테고리와 하위 카테고리로 필터링
+//            response = productService.listByCategoryAndSubCategory(cno, scno, pageRequestDTO);
+//        } else if (cno != null) {
+//            // 상위 카테고리로 필터링
+//            response = productService.listByCategory(cno, pageRequestDTO);
+//        } else {
+//            // 전체 목록 조회 (기존에 이런 메소드가 없다면, 여기에 추가)
+//            response = productService.getList(pageRequestDTO);
+//        }
+
+        PageResponseDTO<ProductListDTO> response = productService.searchProducts(tno, cno, scno, pageRequestDTO);
 
         log.info("상품 목록 응답: {}", response);
         return ResponseEntity.ok(response);
