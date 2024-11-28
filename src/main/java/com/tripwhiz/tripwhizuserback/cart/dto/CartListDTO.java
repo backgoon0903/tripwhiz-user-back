@@ -19,4 +19,6 @@ public class CartListDTO {
 
     private int qty;
 
+    private boolean delFlag;
+
 }

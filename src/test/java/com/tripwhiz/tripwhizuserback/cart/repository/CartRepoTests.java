@@ -41,7 +41,7 @@ public class CartRepoTests {
 
         // 특정 Member 설정
         MemberEntity member = MemberEntity.builder()
-                .email("sushiandcat@naver.com") // 이메일 설정
+                .email("eggzuxi99@gmail.com") // 이메일 설정
                 .build();
 
         // 데이터베이스에서 모든 pno 값을 가져옴
@@ -61,6 +61,7 @@ public class CartRepoTests {
                     .member(member)
                     .product(Product.builder().pno(randomPno).build()) // 무작위로 선택한 product pno
                     .qty((int) (Math.random() * 5) + 1) // qty는 1에서 5 사이의 무작위 값
+                    .delFlag(false)
                     .build();
 
             cartRepository.save(cart);
