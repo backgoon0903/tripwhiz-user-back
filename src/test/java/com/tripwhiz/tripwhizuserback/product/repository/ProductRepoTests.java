@@ -1,7 +1,6 @@
 package com.tripwhiz.tripwhizuserback.product.repository;
 
 import com.tripwhiz.tripwhizuserback.category.domain.Category;
-import com.tripwhiz.tripwhizuserback.category.domain.ParentCategory;
 import com.tripwhiz.tripwhizuserback.category.domain.SubCategory;
 import com.tripwhiz.tripwhizuserback.category.repository.CategoryRepository;
 import com.tripwhiz.tripwhizuserback.category.repository.SubCategoryRepository;
@@ -59,11 +58,11 @@ public class ProductRepoTests {
 
     private List<Category> createCategories() {
         List<Category> categories = new ArrayList<>();
-        categories.add(new Category(1L, ParentCategory.STORAGE, false));
-        categories.add(new Category(2L, ParentCategory.CLOTHING, false));
-        categories.add(new Category(3L, ParentCategory.SAFETY, false));
-        categories.add(new Category(4L, ParentCategory.ACCESSORY, false));
-        categories.add(new Category(5L, ParentCategory.ACTIVITY, false));
+        categories.add(new Category(1L, "수납/편의",  false));
+        categories.add(new Category(2L, "의류", false));
+        categories.add(new Category(3L, "안전/위생", false));
+        categories.add(new Category(4L, "악세사리", false));
+        categories.add(new Category(5L, "액티비티 용품", false));
         return categoryRepository.saveAll(categories);
     }
 
