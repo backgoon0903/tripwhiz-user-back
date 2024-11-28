@@ -52,9 +52,9 @@ public class CartService {
 //        return cartRepository.findAllCartItems();
 //    }
 
-    public List<CartListDTO> list() {
+    public List<CartListDTO> list(String email) {
 
-        List<CartListDTO> cartItems = cartRepository.findAllCartItems();
+        List<CartListDTO> cartItems = cartRepository.findCartItemsByMemberEmail(email);
 
         return cartItems.stream()
                 .map(cart -> CartListDTO.builder()

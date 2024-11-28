@@ -19,9 +19,9 @@ public class CartController {
     private final CartService cartService;
 
     @GetMapping("/list")
-    public ResponseEntity<List<CartListDTO>> list() {
+    public ResponseEntity<List<CartListDTO>> list(@RequestParam("email") String email) {
 
-        List<CartListDTO> cartItems = cartService.list();
+        List<CartListDTO> cartItems = cartService.list(email);
 
         log.info(cartItems);
 

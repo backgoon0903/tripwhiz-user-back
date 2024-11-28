@@ -41,7 +41,7 @@ public class CartRepoTests {
 
         // 특정 Member 설정
         MemberEntity member = MemberEntity.builder()
-                .email("sushiandcat@naver.com") // 이메일 설정
+                .email("eggzuxi99@gmail.com") // 이메일 설정
                 .build();
 
         // 데이터베이스에서 모든 pno 값을 가져옴

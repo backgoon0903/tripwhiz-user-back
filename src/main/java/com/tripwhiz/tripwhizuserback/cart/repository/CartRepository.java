@@ -5,15 +5,19 @@ import com.tripwhiz.tripwhizuserback.cart.dto.CartListDTO;
 import com.tripwhiz.tripwhizuserback.cart.dto.CartProductDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface CartRepository extends JpaRepository<Cart, Long> {
 
+    // 회원별 주문 조회
     @Query("SELECT new com.tripwhiz.tripwhizuserback.cart.dto.CartListDTO(c.member.email, c.bno, c.product.pno, c.qty) " +
-            "FROM Cart c")
-    List<CartListDTO> findAllCartItems();
+            "FROM Cart c " +
+            "WHERE c.member.email = :email")
+    List<CartListDTO> findCartItemsByMemberEmail(@Param("email") String email);
+
 
     // 특정 제품이 장바구니에 있는지 확인 (회원 고려 X)
     @Query("SELECT c FROM Cart c WHERE c.product.pno = :pno")
