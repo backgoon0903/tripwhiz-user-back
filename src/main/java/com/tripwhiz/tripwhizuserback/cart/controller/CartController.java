@@ -18,10 +18,11 @@ public class CartController {
 
     private final CartService cartService;
 
+    // 멤버별 장바구니 리스트 조회
     @GetMapping("/list")
-    public ResponseEntity<List<CartListDTO>> list() {
+    public ResponseEntity<List<CartListDTO>> list(@RequestParam("email") String email) {
 
-        List<CartListDTO> cartItems = cartService.list();
+        List<CartListDTO> cartItems = cartService.list(email);
 
         log.info(cartItems);
 
@@ -42,5 +43,24 @@ public class CartController {
 //        List<CartProductDTO> cartItems = cartService.getCartItems();
 //        return ResponseEntity.ok(cartItems);
 //    }
+
+    @DeleteMapping("delete/{pno}")
+    public ResponseEntity<Void> deleteByProduct(
+            @RequestParam("email") String email,
+            @PathVariable("pno") Long pno) {
+
+        cartService.softDeleteByProduct(email, pno); // Service 호출
+        log.info("Product deleted successfully");
+        return ResponseEntity.noContent().build(); // 204 No Content 반환
+    }
+
+    @DeleteMapping("delete/all")
+    public ResponseEntity<Void> deleteAll(
+            @RequestParam("email") String email) {
+
+        cartService.softDeleteAll(email); // Service 호출
+        log.info("Product deleted successfully");
+        return ResponseEntity.noContent().build(); // 204 No Content 반환
+    }
 
 }

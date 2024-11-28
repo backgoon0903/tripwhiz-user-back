@@ -29,6 +29,9 @@ public class Cart {
     @Column(nullable = false)
     private int qty;
 
+    @Column(nullable = false)
+    private boolean delFlag = false;
+
     public void changeQty(int qty) {
         if (qty == 0) {
             throw new IllegalArgumentException("Quantity change must not be zero.");
@@ -41,6 +44,10 @@ public class Cart {
         }
 
         this.qty = newQty;
+    }
+
+    public void softDelete() {
+        this.delFlag = true;
     }
 
 }
