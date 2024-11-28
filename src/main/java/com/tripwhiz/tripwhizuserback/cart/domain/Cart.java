@@ -29,6 +29,7 @@ public class Cart {
     @Column(nullable = false)
     private int qty;
 
+    // 수량변경
     public void changeQty(int qty) {
         if (qty == 0) {
             throw new IllegalArgumentException("Quantity change must not be zero.");
