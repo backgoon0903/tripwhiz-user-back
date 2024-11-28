@@ -4,6 +4,7 @@ import com.tripwhiz.tripwhizuserback.cart.domain.Cart;
 import com.tripwhiz.tripwhizuserback.cart.dto.CartListDTO;
 import com.tripwhiz.tripwhizuserback.cart.dto.CartProductDTO;
 import com.tripwhiz.tripwhizuserback.cart.repository.CartRepository;
+import com.tripwhiz.tripwhizuserback.member.domain.MemberEntity;
 import com.tripwhiz.tripwhizuserback.product.domain.Product;
 import com.tripwhiz.tripwhizuserback.product.repository.ProductRepository;
 import jakarta.transaction.Transactional;
@@ -26,9 +27,9 @@ public class CartService {
 
     // 장바구니에 물건 추가
     public void addToCart(CartProductDTO cartProductDTO) {
-        // 제품 ID로 제품을 검색
-        Product product = productRepository.findById(cartProductDTO.getPno())
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        Product product = Product.builder().pno(cartProductDTO.getPno()).build();
+        MemberEntity member = MemberEntity.builder().email(cartProductDTO.getEmail()).build();
 
         // 장바구니에서 해당 제품 찾기
         Optional<Cart> existingCart = cartRepository.findByProduct(cartProductDTO.getPno());
@@ -42,6 +43,7 @@ public class CartService {
             Cart cart = Cart.builder()
                     .product(product)
                     .qty(cartProductDTO.getQty())
+                    .member(member)
                     .build();
             cartRepository.save(cart);
         }
