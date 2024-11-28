@@ -29,6 +29,9 @@ public class Cart {
     @Column(nullable = false)
     private int qty;
 
+    @Column(nullable = false)
+    private boolean delFlag = false;
+
     // 수량변경
     public void changeQty(int qty) {
         if (qty == 0) {
@@ -42,6 +45,10 @@ public class Cart {
         }
 
         this.qty = newQty;
+    }
+
+    public void softDelete() {
+        this.delFlag = true;
     }
 
 }
