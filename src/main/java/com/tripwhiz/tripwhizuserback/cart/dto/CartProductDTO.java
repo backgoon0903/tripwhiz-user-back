@@ -13,5 +13,6 @@ public class CartProductDTO {
 
     private Long pno;
     private int qty; // 수량
+    private String email;
 
 }
