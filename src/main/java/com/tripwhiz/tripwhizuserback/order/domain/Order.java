@@ -46,5 +46,4 @@ public class Order {
     @Column(nullable = false)
     private boolean delFlag = false;
 
-
 }

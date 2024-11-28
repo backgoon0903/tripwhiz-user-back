@@ -9,16 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartListDTO {
-
-    private String email;
-
-    private Long bno;
+public class CartProductDTO {
 
     private Long pno;
-
-    private int qty;
-
-    private boolean delFlag;
+    private int qty; // 수량
 
 }
