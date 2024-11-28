@@ -48,10 +48,6 @@ public class CartService {
     }
 
     // 장바구니 목록 조회
-//    public List<CartProductDTO> getCartItems() {
-//        return cartRepository.findAllCartItems();
-//    }
-
     public List<CartListDTO> list(String email) {
 
         List<CartListDTO> cartItems = cartRepository.findCartItemsByMemberEmail(email);
@@ -66,5 +62,19 @@ public class CartService {
                 .collect(Collectors.toList());
 
     }
+
+    public void softDeleteByProduct(String email, Long pno) {
+        Cart cart = cartRepository.findByMemberEmailAndProductPno(email, pno)
+                .orElseThrow(() -> new IllegalArgumentException("Cart item not found"));
+        cart.softDelete(); // 엔티티의 softDelete 메서드 호출
+    }
+
+    public void softDeleteAll(String email) {
+        cartRepository.softDeleteAllByEmail(email);
+    }
+
+
+
+
 
 }
