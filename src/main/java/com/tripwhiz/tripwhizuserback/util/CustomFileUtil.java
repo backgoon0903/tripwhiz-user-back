@@ -28,7 +28,7 @@ import jakarta.annotation.PostConstruct;
 @RequiredArgsConstructor
 public class CustomFileUtil {
 
-    @Value("${com.tripwhiz.upload.path}")
+    @Value("${com.tripwhiz.upload.qrcodepath}")
     private String uploadPath;
 
     @PostConstruct
@@ -131,3 +131,4 @@ public class CustomFileUtil {
 
 
 }
+
