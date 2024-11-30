@@ -3,7 +3,6 @@ package com.tripwhiz.tripwhizuserback.luggage.controller;
 import com.tripwhiz.tripwhizuserback.luggage.dto.LuggageDTO;
 import com.tripwhiz.tripwhizuserback.luggage.service.LuggageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,8 +13,8 @@ public class LuggageController {
     private LuggageService luggageService;
 
     @PostMapping("/saveLuggage")
-    public ResponseEntity<String> saveLuggage(@RequestBody LuggageDTO luggageDTO) {
-        luggageService.saveLuggage(luggageDTO.getStartPoint(), luggageDTO.getEndPoint());
-        return ResponseEntity.ok("Luggage points saved successfully");
+    public String saveLuggage(@RequestBody LuggageDTO luggageDTO) {
+        luggageService.saveLuggage(luggageDTO);
+        return "Luggage saved successfully for user: " + luggageDTO.getEmail();  // name 대신 email로 변경
     }
 }
