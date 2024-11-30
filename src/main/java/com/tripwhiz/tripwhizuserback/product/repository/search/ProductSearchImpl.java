@@ -58,6 +58,9 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         if (scno != null) {
             whereClause.and(product.subCategory.scno.eq(scno));
         }
+
+        whereClause.and(product.delFlag.eq(false));
+
         query.where(whereClause);
 
         // 페이징 및 결과 조회
@@ -89,6 +92,7 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
                 .pno(product.getPno())
                 .pname(product.getPname())
                 .price(product.getPrice())
+                .pdesc(product.getPdesc())
                 .cno(product.getCategory() != null ? product.getCategory().getCno() : null)
                 .scno(product.getSubCategory() != null ? product.getSubCategory().getScno() : null)
                 .build();

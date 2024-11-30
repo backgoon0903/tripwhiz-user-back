@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -89,9 +90,13 @@ public class ProductService {
         Product product = productRepository.findById(pno)
                 .orElseThrow(() -> new RuntimeException("Product not found with ID: " + pno));
 
-        // 삭제 처리
-        productRepository.delete(product);
-        log.info("Product deleted with ID: {}", pno);
+        // 소프트 삭제 처리: delFlag를 true로 설정
+        product.changeDelFlag(true);
+
+        // 상품 수정 후 저장 (소프트 삭제 처리)
+        productRepository.save(product);
+
+        log.info("Product soft-deleted with ID: {}", pno);
     }
 }
 

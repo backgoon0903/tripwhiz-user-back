@@ -7,7 +7,6 @@ import com.tripwhiz.tripwhizuserback.product.dto.ProductReadDTO;
 import com.tripwhiz.tripwhizuserback.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -71,7 +70,7 @@ public class ProductController {
     }
 
     // 상품 삭제
-    @DeleteMapping("/delete/{pno}")
+    @PutMapping("/delete/{pno}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long pno) {
         log.info("Received product deletion request for PNO {}", pno);
         productService.deleteProduct(pno);
