@@ -20,7 +20,7 @@ public class CartController {
 
     // 멤버별 장바구니 리스트 조회
     @GetMapping("/list")
-    public ResponseEntity<List<CartListDTO>> list(@RequestParam("email") String email) {
+    public ResponseEntity<List<CartListDTO>> list(@RequestHeader("email") String email) {
 
         List<CartListDTO> cartItems = cartService.list(email);
 
@@ -46,7 +46,7 @@ public class CartController {
 
     @DeleteMapping("delete/{pno}")
     public ResponseEntity<Void> deleteByProduct(
-            @RequestParam("email") String email,
+            @RequestHeader("email") String email,
             @PathVariable("pno") Long pno) {
 
         cartService.softDeleteByProduct(email, pno); // Service 호출
@@ -56,7 +56,7 @@ public class CartController {
 
     @DeleteMapping("delete/all")
     public ResponseEntity<Void> deleteAll(
-            @RequestParam("email") String email) {
+            @RequestHeader("email") String email) {
 
         cartService.softDeleteAll(email); // Service 호출
         log.info("Product deleted successfully");
