@@ -1,134 +1,82 @@
 package com.tripwhiz.tripwhizuserback.util;
 
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import net.coobird.thumbnailator.Thumbnails;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-
-import net.coobird.thumbnailator.Thumbnails;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-
-import jakarta.annotation.PostConstruct;
-
 @Component
 @Log4j2
 @RequiredArgsConstructor
 public class CustomFileUtil {
 
-    @Value("${com.tripwhiz.upload.qrcodepath}")
+    @Value("${com.tripwhiz.uploadBasic}")
     private String uploadPath;
+
+    @Value("${com.tripwhiz.upload.productpath}")
+    private String productPath;
+
+    @Value("${com.tripwhiz.upload.qrcodepath}")
+    private String qrcodePath;
 
     @PostConstruct
     public void init() {
-        File tempFolder = new File(uploadPath);
+        // 업로드 및 QR코드 경로 초기화
+        createDirectoryIfNotExists(uploadPath + File.separator + productPath);
+        createDirectoryIfNotExists(uploadPath + File.separator + qrcodePath);
 
-        if(tempFolder.exists() == false) {
-            tempFolder.mkdir();
-        }
-
-        uploadPath = tempFolder.getAbsolutePath();
-
-        log.info("-------------------------------------");
-        log.info(uploadPath);
+        log.info("Upload path initialized: {}", uploadPath);
+        log.info("QR Code path initialized: {}", qrcodePath);
+        log.info("Product path initialized: {}", productPath);
     }
 
-    public List<String> saveFiles(List<MultipartFile> files)throws RuntimeException{
-
-        if(files == null || files.size() == 0){
-            return List.of();
+    private void createDirectoryIfNotExists(String path) {
+        File directory = new File(path);
+        if (!directory.exists()) {
+            directory.mkdirs();
         }
-
-        List<String> uploadNames = new ArrayList<>();
-
-        for (MultipartFile multipartFile : files) {
-
-            String savedName = UUID.randomUUID().toString() + "_" + multipartFile.getOriginalFilename();
-
-            Path savePath = Paths.get(uploadPath, savedName);
-//            log.info("실제 경로 : " + savePath);
-            try {
-                Files.copy(multipartFile.getInputStream(), savePath);
-
-                String contentType = multipartFile.getContentType();
-
-                log.info("-------------------------");
-                log.info("contentType : " + contentType);
-                log.info("-------------------------");
-
-                if(contentType != null && contentType.startsWith("image")){ //이미지여부 확인
-
-                    Path thumbnailPath = Paths.get(uploadPath, "s_"+savedName);
-
-                    Thumbnails.of(savePath.toFile())
-                            .size(400,400)
-                            .toFile(thumbnailPath.toFile());
-                }
-
-                uploadNames.add(savedName);
-            } catch (IOException e) {
-                throw new RuntimeException(e.getMessage());
-            }
-        }//end for
-        return uploadNames;
     }
 
-    public ResponseEntity<Resource> getFile(String fileName) {
-
-        Resource resource = new FileSystemResource(uploadPath+ File.separator + fileName);
-
-        if(!resource.exists()) {
-
-            resource = new FileSystemResource(uploadPath+ File.separator + "default.png");
-
-        }
-
-        HttpHeaders headers = new HttpHeaders();
-
-        try{
-            headers.add("Content-Type", Files.probeContentType( resource.getFile().toPath() ));
-        } catch(Exception e){
-            return ResponseEntity.internalServerError().build();
-        }
-        return ResponseEntity.ok().headers(headers).body(resource);
+    public String uploadQRCodeFile(MultipartFile file) throws IOException {
+        String savedName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        Path savePath = Paths.get(uploadPath + File.separator+ qrcodePath, savedName);
+        Files.copy(file.getInputStream(), savePath);
+        log.info("Saved QR Code file at: {}", savePath);
+        return savedName;
     }
 
 
-    public void deleteFiles(List<String> fileNames) {
+    public String uploadProductImageFile(MultipartFile file) throws IOException {
+        String savedName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        Path savePath = Paths.get(uploadPath + File.separator + productPath, savedName);
+        Files.copy(file.getInputStream(), savePath);
 
-        if(fileNames == null || fileNames.size() == 0){
-            return;
-        }
+        // 썸네일 생성
+        createThumbnail(file, savedName);
 
-        fileNames.forEach(fileName -> {
-
-            //썸네일이 있는지 확인하고 삭제
-            String thumbnailFileName = "s_" + fileName;
-            Path thumbnailPath = Paths.get(uploadPath, thumbnailFileName);
-            Path filePath = Paths.get(uploadPath, fileName);
-
-            try {
-                Files.deleteIfExists(filePath);
-                Files.deleteIfExists(thumbnailPath);
-            } catch (IOException e) {
-                throw new RuntimeException(e.getMessage());
-            }
-        });
+        log.info("Saved product image file at: {}", savePath);
+        return savedName;
     }
 
 
+    private void createThumbnail(MultipartFile file, String savedName) throws IOException {
+        String thumbnailName = "s_" + savedName;
+        Path thumbnailPath = Paths.get(uploadPath + File.separator + productPath, thumbnailName);
 
+        Thumbnails.of(file.getInputStream())
+                .size(200, 200) // 썸네일 크기 설정
+                .toFile(thumbnailPath.toFile());
+
+        log.info("Created thumbnail file at: {}", thumbnailPath);
+    }
 }
 

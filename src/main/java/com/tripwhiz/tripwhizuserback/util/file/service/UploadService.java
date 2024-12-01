@@ -21,11 +21,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UploadService {
 
-//    @Value("${com.tripwhiz.upload.productpath}")
-//    private String productUploadFolder;
+    @Value("${com.tripwhiz.uploadBasic}")
+    private String uploadPath;
 
-    @Value("${com.tripwhiz.upload.qrimagepath}")
-    private String qrUploadFolder;
+//    @Value("${com.tripwhiz.upload.productpath}")
+//    private String productPath;
+//
+//    @Value("${com.tripwhiz.upload.qrcodepath}")
+//    private String qrcodePath;
 
     public List<AttachFile> uploadFiles(MultipartFile[] files) {
         if (files == null || files.length == 0) {
@@ -40,7 +43,7 @@ public class UploadService {
 
             try {
                 // 파일 저장
-                File savedFile = new File(qrUploadFolder, fileName);
+                File savedFile = new File(uploadPath, fileName);
                 FileCopyUtils.copy(file.getBytes(), savedFile);
 
                 // AttachFile 생성
@@ -54,7 +57,7 @@ public class UploadService {
                     @Cleanup
                     InputStream inputStream = new FileInputStream(savedFile);
                     @Cleanup
-                    OutputStream outputStream = new FileOutputStream(new File(qrUploadFolder, thumbnailFileName));
+                    OutputStream outputStream = new FileOutputStream(new File(uploadPath, thumbnailFileName));
 
                     Thumbnailator.createThumbnail(inputStream, outputStream, 200, 200);
 
@@ -74,7 +77,7 @@ public class UploadService {
 
     public void deleteFile(String fileName) {
         try {
-            File fileToDelete = new File(qrUploadFolder, fileName);
+            File fileToDelete = new File(uploadPath, fileName);
 
             if (fileToDelete.exists()) {
                 boolean deleted = fileToDelete.delete();
