@@ -45,7 +45,8 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         // 기본 쿼리 작성
         JPQLQuery<Product> query = from(product)
                 .leftJoin(productTheme).on(productTheme.product.eq(product))
-                .leftJoin(themeCategory).on(productTheme.themeCategory.eq(themeCategory));
+                .leftJoin(themeCategory).on(productTheme.themeCategory.eq(themeCategory))
+                .leftJoin(product.attachFiles).fetchJoin();
 
         // 동적 조건 추가
         BooleanBuilder whereClause = new BooleanBuilder();
@@ -58,6 +59,9 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
         if (scno != null) {
             whereClause.and(product.subCategory.scno.eq(scno));
         }
+
+        whereClause.and(product.delFlag.eq(false));
+
         query.where(whereClause);
 
         // 페이징 및 결과 조회
@@ -89,8 +93,10 @@ public class ProductSearchImpl extends QuerydslRepositorySupport implements Prod
                 .pno(product.getPno())
                 .pname(product.getPname())
                 .price(product.getPrice())
+                .pdesc(product.getPdesc())
                 .cno(product.getCategory() != null ? product.getCategory().getCno() : null)
                 .scno(product.getSubCategory() != null ? product.getSubCategory().getScno() : null)
+                .attachFiles(product.getAttachFiles())
                 .build();
     }
 
