@@ -2,15 +2,16 @@ package com.tripwhiz.tripwhizuserback.util.file.service;
 
 import com.tripwhiz.tripwhizuserback.util.file.domain.AttachFile;
 import com.tripwhiz.tripwhizuserback.util.file.exception.UploadException;
+import lombok.Cleanup;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import net.coobird.thumbnailator.Thumbnailator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -20,38 +21,74 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UploadService {
 
-    @Value("${com.tripwhiz.upload.productpath}")
-    private String uploadFolder;
+    @Value("${com.tripwhiz.uploadBasic}")
+    private String uploadPath;
 
-    @Value("${com.tripwhiz.upload.qrcodepath}")
-    private String qrImageFolder;
+//    @Value("${com.tripwhiz.upload.productpath}")
+//    private String productPath;
+//
+//    @Value("${com.tripwhiz.upload.qrcodepath}")
+//    private String qrcodePath;
 
     public List<AttachFile> uploadFiles(MultipartFile[] files) {
-        List<AttachFile> uploadedFiles = new ArrayList<>();
         if (files == null || files.length == 0) {
-            return uploadedFiles;
+            return new ArrayList<>();
         }
 
-        for (MultipartFile file : files) {
+        List<AttachFile> uploadedFiles = new ArrayList<>();
+
+        for (int ord = 0; ord < files.length; ord++) { // ord 값이 0부터 시작
+            MultipartFile file = files[ord];
             String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-            File destination = new File(uploadFolder, fileName);
+
             try {
-                FileCopyUtils.copy(file.getBytes(), destination);
-                uploadedFiles.add(new AttachFile(0, fileName));
-                log.info("File uploaded successfully: {}", fileName);
+                // 파일 저장
+                File savedFile = new File(uploadPath, fileName);
+                FileCopyUtils.copy(file.getBytes(), savedFile);
+
+                // AttachFile 생성
+                AttachFile attachFile = new AttachFile(ord, fileName); // ord 값을 추가
+                uploadedFiles.add(attachFile);
+
+                // 썸네일 생성 (ord=0인 경우에만 생성)
+                if (ord == 0 && file.getContentType() != null && file.getContentType().startsWith("image")) {
+                    String thumbnailFileName = "s_" + fileName;
+
+                    @Cleanup
+                    InputStream inputStream = new FileInputStream(savedFile);
+                    @Cleanup
+                    OutputStream outputStream = new FileOutputStream(new File(uploadPath, thumbnailFileName));
+
+                    Thumbnailator.createThumbnail(inputStream, outputStream, 200, 200);
+
+                    // 썸네일도 AttachFile로 추가할 필요가 없다면 여기서 종료
+                    AttachFile thumbnailFile = new AttachFile(ord, thumbnailFileName); // 썸네일의 ord도 0으로 설정
+                    uploadedFiles.add(thumbnailFile);
+                }
+
             } catch (IOException e) {
+                log.error("File upload failed: {}", e.getMessage());
                 throw new UploadException("Failed to upload file: " + e.getMessage());
             }
         }
+
         return uploadedFiles;
     }
 
-    public AttachFile uploadQRCodeFile(String fileName) {
-        File qrFile = new File(qrImageFolder, fileName);
-        if (!qrFile.exists()) {
-            throw new UploadException("QR Code file does not exist: " + fileName);
+    public void deleteFile(String fileName) {
+        try {
+            File fileToDelete = new File(uploadPath, fileName);
+
+            if (fileToDelete.exists()) {
+                boolean deleted = fileToDelete.delete();
+                if (!deleted) {
+                    throw new IOException("Failed to delete file: " + fileName);
+                }
+            }
+        } catch (IOException e) {
+            log.error("File deletion failed: {}", e.getMessage());
+            throw new UploadException("Failed to delete file: " + fileName);
         }
-        log.info("QR Code file registered successfully: {}", fileName);
-        return new AttachFile(0, fileName);
     }
 }
+
