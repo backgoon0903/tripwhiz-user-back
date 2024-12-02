@@ -1,19 +1,28 @@
 package com.tripwhiz.tripwhizuserback.product.service;
 
+import com.tripwhiz.tripwhizuserback.category.domain.Category;
+import com.tripwhiz.tripwhizuserback.category.domain.SubCategory;
+import com.tripwhiz.tripwhizuserback.category.repository.CategoryRepository;
+import com.tripwhiz.tripwhizuserback.category.repository.SubCategoryRepository;
 import com.tripwhiz.tripwhizuserback.common.dto.PageRequestDTO;
 import com.tripwhiz.tripwhizuserback.common.dto.PageResponseDTO;
+import com.tripwhiz.tripwhizuserback.product.domain.Product;
 import com.tripwhiz.tripwhizuserback.product.domain.Product;
 import com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO;
 import com.tripwhiz.tripwhizuserback.product.dto.ProductReadDTO;
 import com.tripwhiz.tripwhizuserback.product.repository.ProductRepository;
+import com.tripwhiz.tripwhizuserback.util.CustomFileUtil;
+import com.tripwhiz.tripwhizuserback.util.file.domain.AttachFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
+
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,21 +33,10 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final SubCategoryRepository subCategoryRepository;
+    private final CustomFileUtil customFileUtil;
 
-    // 상품 목록 조회
-    public PageResponseDTO<ProductListDTO> getList(PageRequestDTO pageRequestDTO) {
-        log.info("페이지 요청에 따라 상품 목록을 조회합니다: {}", pageRequestDTO);
-
-        Pageable pageable = pageRequestDTO.getPageable();
-        Page<ProductListDTO> productPage = productRepository.allProductList(pageable);
-
-        if (productPage == null || productPage.isEmpty()) {
-            log.warn("조회된 상품이 없습니다.");
-            return new PageResponseDTO<>(List.of(), pageRequestDTO, 0);
-        }
-
-        return new PageResponseDTO<>(productPage.getContent(), pageRequestDTO, productPage.getTotalElements());
-    }
 
     // 상품 ID로 단일 상품 조회
     public Optional<ProductReadDTO> getProductById(Long pno) {
@@ -46,65 +44,108 @@ public class ProductService {
         return productRepository.read(pno);
     }
 
-    // 상위 카테고리(cno)로 상품 목록 조회
-    public PageResponseDTO<ProductListDTO> listByCategory(Long cno, PageRequestDTO requestDTO) {
-        log.info("카테고리 ID(cno)로 상품 목록을 조회합니다: {}", cno);
+    //상품 필터링
+    public PageResponseDTO<ProductListDTO> searchProducts(Long tno, Long cno, Long scno, PageRequestDTO pageRequestDTO) {
+        log.info("상품 목록을 조회합니다", tno, cno, scno);
 
-        Pageable pageable = requestDTO.getPageable();
-        Page<ProductListDTO> products = productRepository.findByCategoryCno(cno, pageable);
 
-        if (products.isEmpty()) {
-            log.warn("해당 카테고리에 상품이 없습니다: {}", cno);
-            return new PageResponseDTO<>(List.of(), requestDTO, 0);
-        }
-
-        return new PageResponseDTO<>(products.getContent(), requestDTO, products.getTotalElements());
+        return productRepository.findByFiltering(tno, cno, scno, pageRequestDTO);
     }
 
-    // 하위 카테고리(scno)로 상품 목록 조회
-    public PageResponseDTO<ProductListDTO> listBySubCategory(Long scno, PageRequestDTO requestDTO) {
-        log.info("하위 카테고리 ID(scno)로 상품 목록을 조회합니다: {}", scno);
+    // 상품 생성
+    public Long createProduct(ProductListDTO productListDTO, List<MultipartFile> imageFiles) throws IOException {
+        // Category와 SubCategory를 조회
+        Category category = categoryRepository.findById(productListDTO.getCno())
+                .orElseThrow(() -> new RuntimeException("Category not found with ID: " + productListDTO.getCno()));
+        SubCategory subCategory = subCategoryRepository.findById(productListDTO.getScno())
+                .orElseThrow(() -> new RuntimeException("SubCategory not found with ID: " + productListDTO.getScno()));
 
-        Pageable pageable = requestDTO.getPageable();
-        Page<ProductListDTO> products = productRepository.findBySubCategoryScno(scno, pageable);
+        // toEntity 호출 시 Category와 SubCategory 전달
+        Product product = productListDTO.toEntity(category, subCategory);
 
-        if (products.isEmpty()) {
-            log.warn("해당 하위 카테고리에 상품이 없습니다: {}", scno);
-            return new PageResponseDTO<>(List.of(), requestDTO, 0);
+        for (int i = 0; i < imageFiles.size(); i++) {
+            MultipartFile imageFile = imageFiles.get(i);
+            String savedImageName = customFileUtil.uploadProductImageFile(imageFile);
+
+            // AttachFile 생성 (ord는 i + 1로 설정)
+            AttachFile attachFile = new AttachFile(i + 1, savedImageName);
+            product.addAttachFile(attachFile);
         }
 
-        return new PageResponseDTO<>(products.getContent(), requestDTO, products.getTotalElements());
+        Product savedProduct = productRepository.save(product);
+
+        log.info("Product created with ID: {}", savedProduct.getPno());
+        return savedProduct.getPno();
     }
 
-    // 테마 카테고리(tno)로 상품 목록 조회
-    public PageResponseDTO<ProductListDTO> listByTheme(Long tno, PageRequestDTO requestDTO) {
-        log.info("테마 카테고리 ID(tno)로 상품 목록을 조회합니다: {}", tno);
+    // 상품 수정
+    public Long updateProduct(Long pno, ProductListDTO productListDTO, List<MultipartFile> imageFiles) throws IOException {
 
-        Pageable pageable = requestDTO.getPageable();
-        Page<ProductListDTO> products = productRepository.findByThemeCategoryTno(tno, pageable);
+        // Product 조회
+        Product product = productRepository.findById(pno)
+                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + pno));
 
-        if (products.isEmpty()) {
-            log.warn("해당 테마 카테고리에 상품이 없습니다: {}", tno);
-            return new PageResponseDTO<>(List.of(), requestDTO, 0);
+        // Category와 SubCategory를 조회
+        Category category = categoryRepository.findById(productListDTO.getCno())
+                .orElseThrow(() -> new RuntimeException("Category not found with ID: " + productListDTO.getCno()));
+        SubCategory subCategory = subCategoryRepository.findById(productListDTO.getScno())
+                .orElseThrow(() -> new RuntimeException("SubCategory not found with ID: " + productListDTO.getScno()));
+
+        // updateFromDTO 호출
+        product.updateFromDTO(productListDTO, category, subCategory);
+
+        // 기존 AttachFile 삭제
+        product.getAttachFiles().clear();
+
+        // 새로운 이미지 파일 업로드 및 AttachFile 생성
+        for (int i = 0; i < imageFiles.size(); i++) {
+            MultipartFile imageFile = imageFiles.get(i);
+            String savedImageName = customFileUtil.uploadProductImageFile(imageFile);
+
+            // AttachFile 생성 (ord는 i + 1로 설정)
+            AttachFile attachFile = new AttachFile(i + 1, savedImageName);
+            product.addAttachFile(attachFile);
         }
 
-        return new PageResponseDTO<>(products.getContent(), requestDTO, products.getTotalElements());
+        Product updatedProduct = productRepository.save(product);
+
+        log.info("Product updated with ID: {}", updatedProduct.getPno());
+
+        return updatedProduct.getPno();
     }
 
-    // 상품 정보와 이미지를 함께 조회
-    public Optional<ProductReadDTO> getProductWithImage(Long pno) {
-        log.info("ID로 상품 및 이미지를 조회합니다: {}", pno);
+    // 상품 삭제
+    public void deleteProduct(Long pno) {
+        // Product 조회
+        Product product = productRepository.findById(pno)
+                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + pno));
 
-        return productRepository.read(pno).map(product -> {
-            // 이미지 URL 처리
-            if (product.getFileName() != null) {
-                product.setFileName("/uploads/" + product.getFileName());
-                log.info("이미지 URL 처리 완료: {}", product.getFileName());
-            }
-            return product;
-        });
+        // 소프트 삭제 처리: delFlag를 true로 설정
+        product.changeDelFlag(true);
+
+        // 상품 수정 후 저장 (소프트 삭제 처리)
+        productRepository.save(product);
+
+        log.info("Product soft-deleted with ID: {}", pno);
     }
 }
+
+
+
+    // 상품 정보와 이미지를 함께 조회
+//    public Optional<ProductReadDTO> getProductWithImage(Long pno) {
+//        log.info("ID로 상품 및 이미지를 조회합니다: {}", pno);
+//
+//        return productRepository.read(pno).map(product -> {
+//            // 이미지 URL 처리
+//            if (product.getFileName() != null) {
+//                product.setFileName("/uploads/" + product.getFileName());
+//                log.info("이미지 URL 처리 완료: {}", product.getFileName());
+//            }
+//            return product;
+//        });
+//    }
+
 
 // Admin API에서 전송된 상품 정보를 DB에 저장하는 메서드
 //    public void saveProductFromAdmin(ProductListDTO productListDTO) {

@@ -11,10 +11,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CartListDTO {
 
+    private String email;
+
     private Long bno;
 
     private Long pno;
 
     private int qty;
+
+    private boolean delFlag;
 
 }

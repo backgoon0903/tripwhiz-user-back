@@ -1,6 +1,7 @@
 spring:
   application:
     name: tripwhiz-user-back
+
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://tripwhiz.cv9k7s92hqrr.ap-northeast-2.rds.amazonaws.com:13306/tripwhiz
@@ -26,7 +27,7 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 20MB
-      location: /c/upload/attach
+      location: /app/upload
       enabled: true
 
 com:
@@ -34,9 +35,12 @@ com:
     accessTime: 60
     refreshTime: 10080
     alwaysNew: true
+    uploadBasic: C:\\upload
     upload:
-      path: /c/upload/attach  # image upload path
-      qrpath: qrimages
+      productpath: product  # 상품 이미지 저장 경로
+      qrcodepath: qrcode  # QR 코드 이미지 저장 경로
+      storagepath: storage
+      movingpath: moving
 
 logging:
   level:
