@@ -23,6 +23,5 @@ public class LuggageController {
     @GetMapping("/viewQRCode/{type}/{qrname}")
     public ResponseEntity<Resource> viewQRCode(@PathVariable String type, @PathVariable String qrname) {
         return luggageService.fetchQRCode(type, qrname);
-        return "Luggage saved successfully for user: " + luggageDTO.getEmail();  // name 대신 email로 변경
     }
 }
