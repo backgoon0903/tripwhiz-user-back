@@ -19,7 +19,7 @@ public class Image {
     private String fileName;  // 파일명
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_pno")
+    @JoinColumn(name = "proexduct_pno")
     private Product product;
 
 
