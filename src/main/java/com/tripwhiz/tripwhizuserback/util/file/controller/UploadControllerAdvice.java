@@ -1,6 +1,7 @@
 package com.tripwhiz.tripwhizuserback.util.file.controller;
 
-import com.example.demo.util.file.exception.UploadException;
+
+import com.tripwhiz.tripwhizuserback.util.file.exception.UploadException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

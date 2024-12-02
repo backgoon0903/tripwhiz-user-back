@@ -1,7 +1,8 @@
 package com.tripwhiz.tripwhizuserback.util.file.controller;
 
-import com.example.demo.util.file.domain.AttachFile;
-import com.example.demo.util.file.service.UploadService;
+
+import com.tripwhiz.tripwhizuserback.util.file.domain.AttachFile;
+import com.tripwhiz.tripwhizuserback.util.file.service.UploadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
