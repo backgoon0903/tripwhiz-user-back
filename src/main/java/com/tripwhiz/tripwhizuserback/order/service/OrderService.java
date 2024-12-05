@@ -1,5 +1,6 @@
 package com.tripwhiz.tripwhizuserback.order.service;
 
+import com.tripwhiz.tripwhizuserback.cart.dto.CartListDTO;
 import com.tripwhiz.tripwhizuserback.common.dto.PageRequestDTO;
 import com.tripwhiz.tripwhizuserback.common.dto.PageResponseDTO;
 import com.tripwhiz.tripwhizuserback.fcm.dto.FCMRequestDTO;
@@ -12,6 +13,7 @@ import com.tripwhiz.tripwhizuserback.order.dto.OrderProductDTO;
 import com.tripwhiz.tripwhizuserback.order.dto.OrderReadDTO;
 import com.tripwhiz.tripwhizuserback.order.repository.OrderDetailsRepository;
 import com.tripwhiz.tripwhizuserback.order.repository.OrderRepository;
+import com.tripwhiz.tripwhizuserback.product.domain.Product;
 import com.tripwhiz.tripwhizuserback.store.domain.Spot;
 import com.tripwhiz.tripwhizuserback.store.repository.SpotRepository;
 
@@ -182,4 +184,17 @@ public class OrderService {
         String qrCodeUrl = "https://example.com/qrcode/" + qrCodeFileName; // 파일명으로 URL 구성
         return restTemplate.getForObject(qrCodeUrl, byte[].class);
     }
+
+    // convertCartToOrderDetails 메서드
+    private OrderDetails convertCartToOrderDetails(CartListDTO cartListDTO, Order order, Product product) {
+
+        return OrderDetails.builder()
+                .order(order)
+                .product(product)
+                .amount(cartListDTO.getQty())
+                .price(cartListDTO.getQty() * product.getPrice()) // 단가 * 수량
+                .build();
+
+    }
+
 }
