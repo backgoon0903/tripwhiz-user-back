@@ -44,6 +44,15 @@ public class CartController {
 //        return ResponseEntity.ok(cartItems);
 //    }
 
+    @PatchMapping("/changeQty")
+    public ResponseEntity<Void> changeQty(
+            @RequestParam Long pno,
+            @RequestParam int qty) {
+
+        cartService.changeQty(pno, qty);
+        return ResponseEntity.noContent().build(); // 204 No Content 반환
+    }
+
     @DeleteMapping("delete/{pno}")
     public ResponseEntity<Void> deleteByProduct(
             @RequestHeader("email") String email,
@@ -61,6 +70,19 @@ public class CartController {
         cartService.softDeleteAll(email); // Service 호출
         log.info("Product deleted successfully");
         return ResponseEntity.noContent().build(); // 204 No Content 반환
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<String> createOrder(@RequestHeader String email) {
+        // 주문 생성 서비스 호출
+        log.info("Received order creation request for email: {}", email);
+
+        cartService.sendCart(email);
+
+        log.info("Order successfully created and sent to Admin API for email: {}", email);
+
+        // 성공 응답 반환
+        return ResponseEntity.ok("Order successfully created and sent to Admin API.");
     }
 
 }
