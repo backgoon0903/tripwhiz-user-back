@@ -65,7 +65,7 @@ public class CustomSecurityConfig {
 
         corsConfiguration.setAllowedOriginPatterns(List.of("*")); // 모든 출처에서의 요청을 허용
         corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"));
-        corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
+        corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "email"));
         corsConfiguration.setAllowCredentials(true);
 
         // 설정한 CORS 정책을 모든 경로에 적용

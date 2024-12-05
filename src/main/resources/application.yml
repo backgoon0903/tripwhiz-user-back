@@ -8,7 +8,6 @@ spring:
     url: jdbc:mariadb://localhost:13306/tripwhiz
     username: debugger
     password: debugger
-
     hikari:
       minimum-idle: 2
       maximum-pool-size: 5
@@ -41,6 +40,9 @@ com:
       qrcodepath: qrcode  # QR 코드 이미지 저장 경로
       storagepath: storage
       movingpath: moving
+    admin:
+      api:
+        url: http://localhost:8082
 
 logging:
   level:
