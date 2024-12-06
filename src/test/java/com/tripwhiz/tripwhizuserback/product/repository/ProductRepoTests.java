@@ -52,7 +52,7 @@ public class ProductRepoTests {
         // Step 3: 테마 카테고리 생성
         List<ThemeCategory> themeCategories = createThemeCategories();
 
-        // Step 4: 상품 생성
+//        // Step 4: 상품 생성
         createProducts(categories, subCategories, themeCategories);
     }
 
@@ -100,7 +100,7 @@ public class ProductRepoTests {
     private void createProducts(List<Category> categories, List<SubCategory> subCategories, List<ThemeCategory> themeCategories) {
         Random random = new Random();
 
-        IntStream.rangeClosed(1, 100).forEach(i -> {
+        IntStream.rangeClosed(1, 70).forEach(i -> {
             // 랜덤 카테고리 및 하위 카테고리 선택
             Category category = categories.get(random.nextInt(categories.size()));
             List<SubCategory> relatedSubCategories = subCategoryRepository.findByCategory_Cno(category.getCno());

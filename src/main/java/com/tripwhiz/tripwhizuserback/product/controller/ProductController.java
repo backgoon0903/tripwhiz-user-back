@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/product")
+@RequestMapping("/api/admin/product")
 @Log4j2
 @RequiredArgsConstructor
 public class ProductController {
