@@ -58,46 +58,52 @@ public class ProductService {
         return productRepository.findByFiltering(tno, cno, scno, pageRequestDTO);
     }
 
-    // 상품 생성
     public Long createProduct(ProductListDTO productListDTO, List<MultipartFile> imageFiles) throws IOException {
 
         log.info("productListDTO: {}", productListDTO);
         log.info("imageFiles: {}", imageFiles != null ? imageFiles.size() : 0);
 
-        // Category와 SubCategory를 조회
+        // Category와 SubCategory 조회
         Category category = categoryRepository.findById(productListDTO.getCno())
                 .orElseThrow(() -> new RuntimeException("Category not found with ID: " + productListDTO.getCno()));
         SubCategory subCategory = subCategoryRepository.findById(productListDTO.getScno())
                 .orElseThrow(() -> new RuntimeException("SubCategory not found with ID: " + productListDTO.getScno()));
 
-        // toEntity 호출 시 Category와 SubCategory 전달
+        // Product 엔티티 생성 및 저장
         Product product = productListDTO.toEntity(category, subCategory);
 
         for (int i = 0; i < imageFiles.size(); i++) {
             MultipartFile imageFile = imageFiles.get(i);
             String savedImageName = customFileUtil.uploadProductImageFile(imageFile);
-
-            // AttachFile 생성 (ord는 i + 1로 설정)
             AttachFile attachFile = new AttachFile(i + 1, savedImageName);
             product.addAttachFile(attachFile);
         }
 
         Product savedProduct = productRepository.save(product);
+        log.info("Product saved with ID: {}", savedProduct.getPno());
 
+        // 입력된 테마 카테고리(Tnos) 처리
+        List<Long> tnos = productListDTO.getTnos();
+        log.info("ThemeCategory IDs to process: {}", tnos);
 
-        List<ThemeCategory> themeCategories = themeCategoryRepository.findAllById(productListDTO.getTnos());
+        for (Long tno : tnos) {
+            ThemeCategory themeCategory = themeCategoryRepository.findById(tno)
+                    .orElseThrow(() -> new RuntimeException("ThemeCategory not found with ID: " + tno));
 
-        for (ThemeCategory themeCategory : themeCategories) {
+            // ProductTheme 생성 및 저장
             ProductTheme productTheme = ProductTheme.builder()
-                    .product(savedProduct) // 저장된 Product와 매핑
-                    .themeCategory(themeCategory) // 선택된 ThemeCategory와 매핑
+                    .product(savedProduct) // 현재 Product만 매핑
+                    .themeCategory(themeCategory)
                     .build();
             productThemeRepository.save(productTheme);
+
+            log.info("ProductTheme saved: Product ID = {}, ThemeCategory ID = {}", savedProduct.getPno(), tno);
         }
 
-        log.info("Product created with ID: {}", savedProduct.getPno());
         return savedProduct.getPno();
     }
+
+
 
     // 상품 수정
     public Long updateProduct(Long pno, ProductListDTO productListDTO, List<MultipartFile> imageFiles) throws IOException {
