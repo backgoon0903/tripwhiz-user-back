@@ -8,9 +8,13 @@ import com.tripwhiz.tripwhizuserback.common.dto.PageRequestDTO;
 import com.tripwhiz.tripwhizuserback.common.dto.PageResponseDTO;
 import com.tripwhiz.tripwhizuserback.product.domain.Product;
 import com.tripwhiz.tripwhizuserback.product.domain.Product;
+import com.tripwhiz.tripwhizuserback.product.domain.ProductTheme;
+import com.tripwhiz.tripwhizuserback.product.domain.ThemeCategory;
 import com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO;
 import com.tripwhiz.tripwhizuserback.product.dto.ProductReadDTO;
 import com.tripwhiz.tripwhizuserback.product.repository.ProductRepository;
+import com.tripwhiz.tripwhizuserback.product.repository.ProductThemeRepository;
+import com.tripwhiz.tripwhizuserback.product.repository.ThemeCategoryRepository;
 import com.tripwhiz.tripwhizuserback.util.CustomFileUtil;
 import com.tripwhiz.tripwhizuserback.util.file.domain.AttachFile;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +39,8 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final SubCategoryRepository subCategoryRepository;
+    private final ThemeCategoryRepository themeCategoryRepository;
+    private final ProductThemeRepository productThemeRepository;
     private final CustomFileUtil customFileUtil;
 
 
@@ -54,6 +60,10 @@ public class ProductService {
 
     // 상품 생성
     public Long createProduct(ProductListDTO productListDTO, List<MultipartFile> imageFiles) throws IOException {
+
+        log.info("productListDTO: {}", productListDTO);
+        log.info("imageFiles: {}", imageFiles != null ? imageFiles.size() : 0);
+
         // Category와 SubCategory를 조회
         Category category = categoryRepository.findById(productListDTO.getCno())
                 .orElseThrow(() -> new RuntimeException("Category not found with ID: " + productListDTO.getCno()));
@@ -73,6 +83,17 @@ public class ProductService {
         }
 
         Product savedProduct = productRepository.save(product);
+
+
+        List<ThemeCategory> themeCategories = themeCategoryRepository.findAllById(productListDTO.getTnos());
+
+        for (ThemeCategory themeCategory : themeCategories) {
+            ProductTheme productTheme = ProductTheme.builder()
+                    .product(savedProduct) // 저장된 Product와 매핑
+                    .themeCategory(themeCategory) // 선택된 ThemeCategory와 매핑
+                    .build();
+            productThemeRepository.save(productTheme);
+        }
 
         log.info("Product created with ID: {}", savedProduct.getPno());
         return savedProduct.getPno();
