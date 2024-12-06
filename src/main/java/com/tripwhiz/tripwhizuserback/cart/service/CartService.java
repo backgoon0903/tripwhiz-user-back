@@ -151,44 +151,44 @@ public class CartService {
 //        }
 //    }
 
-    // Admin API로 장바구니 목록 전송
-    public void sendCart(String email) {
-
-        List<CartListDTO> cartList = list(email);
-
-        sendCartToAdminApi(cartList, "/api/cart/save");
-
-    }
-
-    private void sendCartToAdminApi(List<CartListDTO> cartList, String endpoint) {
-        try {
-            // JSON 데이터를 문자열로 변환
-            ObjectMapper objectMapper = new ObjectMapper();
-            String jsonCartList = objectMapper.writeValueAsString(cartList);
-
-            log.info(jsonCartList);
-
-            // HTTP 요청 본문 및 헤더 설정
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-            // Admin API Endpoint
-            String adminApiEndpoint = adminApiUrl + endpoint;
-
-            // API 요청 및 응답 처리
-            String response = restTemplate.postForObject(adminApiEndpoint, new HttpEntity<>(jsonCartList, headers), String.class);
-
-            log.info("---------------");
-            log.info("---------------");
-            log.info(response);
-            log.info("---------------3");
-            log.info("---------------4");
-
-            log.info("Cart list successfully sent to Admin API");
-        } catch (Exception e) {
-            log.error("Error sending cart list to Admin API", e);
-        }
-    }
+//    // Admin API로 장바구니 목록 전송
+//    public void sendCart(String email) {
+//
+//        List<CartListDTO> cartList = list(email);
+//
+//        sendCartToAdminApi(cartList, "/api/cart/save");
+//
+//    }
+//
+//    private void sendCartToAdminApi(List<CartListDTO> cartList, String endpoint) {
+//        try {
+//            // JSON 데이터를 문자열로 변환
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            String jsonCartList = objectMapper.writeValueAsString(cartList);
+//
+//            log.info(jsonCartList);
+//
+//            // HTTP 요청 본문 및 헤더 설정
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_JSON);
+//
+//            // Admin API Endpoint
+//            String adminApiEndpoint = adminApiUrl + endpoint;
+//
+//            // API 요청 및 응답 처리
+//            String response = restTemplate.postForObject(adminApiEndpoint, new HttpEntity<>(jsonCartList, headers), String.class);
+//
+//            log.info("---------------");
+//            log.info("---------------");
+//            log.info(response);
+//            log.info("---------------3");
+//            log.info("---------------4");
+//
+//            log.info("Cart list successfully sent to Admin API");
+//        } catch (Exception e) {
+//            log.error("Error sending cart list to Admin API", e);
+//        }
+//    }
 
 
 }
