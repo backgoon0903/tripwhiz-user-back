@@ -40,9 +40,6 @@ com:
       qrcodepath: qrcode  # QR 코드 이미지 저장 경로
       storagepath: storage
       movingpath: moving
-    admin:
-      api:
-        url: http://localhost:8082
 
 logging:
   level:
