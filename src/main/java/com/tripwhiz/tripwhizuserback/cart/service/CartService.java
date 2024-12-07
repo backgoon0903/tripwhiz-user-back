@@ -45,6 +45,8 @@ public class CartService {
             // 기존 제품이 있으면 수량 업데이트
             Cart cart = existingCart.get();
 //            cart.setQty();
+            cart.setQty(cart.getQty() + cartListDTO.getQty()); // 수량 업데이트
+            cartRepository.save(cart); // 변경사항 저장
         } else {
             // 없으면 새로 추가
             Cart cart = Cart.builder()

@@ -43,14 +43,18 @@ public class CartController {
 //        return ResponseEntity.ok(cartItems);
 //    }
 
-    @PatchMapping("/changeQty")
-    public ResponseEntity<Void> changeQty(
-            @RequestParam Long pno,
-            @RequestParam int qty) {
 
-        cartService.changeQty(pno, qty);
-        return ResponseEntity.noContent().build(); // 204 No Content 반환
-    }
+@PatchMapping("/changeQty")
+public ResponseEntity<Void> changeQty(@RequestBody CartListDTO cartListDTO) {
+    Long pno = cartListDTO.getPno();
+    int qty = cartListDTO.getQty();
+
+    cartService.changeQty(pno, qty); // 서비스 호출
+    log.info("Changed quantity for product ID: {} to {}", pno, qty);
+
+    return ResponseEntity.noContent().build(); // 204 No Content 반환
+}
+
 
     @DeleteMapping("delete/{pno}")
     public ResponseEntity<Void> deleteByProduct(
