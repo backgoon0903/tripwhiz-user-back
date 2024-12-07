@@ -9,19 +9,49 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 
+@Log4j2
 @RestController
 @RequestMapping("/api/user/order")
 @RequiredArgsConstructor
 public class OrderController {
 
     private final OrderService userOrderService;
+
+    // 주문 생성
+    @PostMapping("/create")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<?> createOrder(
+            @RequestParam @NotBlank(message = "Email cannot be blank") String email,
+            @RequestParam Long spno,
+            @RequestParam @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}",
+                    message = "Invalid date format. Use yyyy-MM-ddTHH:mm") String pickUpDate) {
+        try {
+            // 주문 생성 서비스 호출
+            Long orderNumber = userOrderService.createOrder(email, spno, LocalDateTime.parse(pickUpDate));
+            log.info("Received pickUpDate: {}", pickUpDate);
+            try {
+                LocalDateTime dateTime = LocalDateTime.parse(pickUpDate);
+                log.info("Parsed pickUpDate: {}", dateTime);
+            } catch (DateTimeParseException e) {
+                log.error("Invalid date format: {}", pickUpDate);
+                throw new IllegalArgumentException("Invalid date format: " + pickUpDate);
+            }
+            return ResponseEntity.ok("주문이 성공적으로 생성되었습니다. 주문 번호: " + orderNumber);
+        } catch (Exception e) {
+            // 에러 처리
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("주문 생성에 실패했습니다: " + e.getMessage());
+        }
+    }
 
     // 내 주문 리스트 조회
     @GetMapping("/list")

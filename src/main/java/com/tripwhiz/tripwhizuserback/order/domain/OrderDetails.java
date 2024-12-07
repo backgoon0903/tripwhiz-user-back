@@ -22,15 +22,17 @@ public class OrderDetails {
     @JoinColumn(name = "ono", nullable = false)
     private Order order; // Order와 다대일 관계
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pno", nullable = false)
-    private Product product; // Product와 다대일 관계
+    @Column(nullable = false)
+    private Long pno;     // 상품 번호
 
     @Column(nullable = false)
-    private int amount; // 주문 수량
+    private String pname;  // 상품명
 
     @Column(nullable = false)
-    private double price; // 해당 상품의 총 가격 (단가 * 수량)
+    private int price;           // 상품 가격
+
+    @Column(nullable = false)
+    private int amount;          // 상품 수량
 
     @Column(nullable = true)
     private String qrCodePath; // QR 코드 파일명 (주문 항목별로 저장)

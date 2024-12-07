@@ -1,7 +1,6 @@
 package com.tripwhiz.tripwhizuserback.cart.controller;
 
 import com.tripwhiz.tripwhizuserback.cart.dto.CartListDTO;
-import com.tripwhiz.tripwhizuserback.cart.dto.CartProductDTO;
 import com.tripwhiz.tripwhizuserback.cart.service.CartService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -32,8 +31,8 @@ public class CartController {
 
     // 장바구니에 물건 추가
     @PostMapping("/add")
-    public ResponseEntity<String> addToCart(@RequestBody CartProductDTO cartProductDTO) {
-        cartService.addToCart(cartProductDTO);
+    public ResponseEntity<String> addToCart(@RequestBody CartListDTO cartListDTO) {
+        cartService.addToCart(cartListDTO);
         return ResponseEntity.ok("Product added to cart successfully");
     }
 
@@ -71,19 +70,5 @@ public class CartController {
         log.info("Product deleted successfully");
         return ResponseEntity.noContent().build(); // 204 No Content 반환
     }
-
-    // 주문 요청
-//    @PostMapping("/send")
-//    public ResponseEntity<String> createOrder(@RequestHeader String email) {
-//        // 주문 생성 서비스 호출
-//        log.info("Received order creation request for email: {}", email);
-//
-//        cartService.sendCart(email);
-//
-//        log.info("Order successfully created and sent to Admin API for email: {}", email);
-//
-//        // 성공 응답 반환
-//        return ResponseEntity.ok("Order successfully created and sent to Admin API.");
-//    }
 
 }
