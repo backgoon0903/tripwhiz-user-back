@@ -25,7 +25,7 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     Optional<Cart> findByProduct(Long pno);
 
     // 특정 제품이 장바구니에 있는지 확인 (회원 고려 O)
-    @Query("SELECT c FROM Cart c WHERE c.member.email = :email AND c.product.pno = :pno")
+    @Query("SELECT c FROM Cart c WHERE c.member.email = :email AND c.product.pno = :pno AND c.delFlag = false")
     Optional<Cart> findByMemberEmailAndProductPno(@Param("email") String email, @Param("pno") Long pno);
 
     // 멤버별 장바구니 비우기
@@ -38,10 +38,5 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 //            "c.product.pno, c.product.pname, c.product.price, c.qty) " +
 //            "FROM Cart c")
 //    List<CartProductDTO> findAllCartItems();
-
-    // 특정 제품의 delFlag를 false로 변경하여 장바구니에 다시 추가
-    @Modifying
-    @Query("UPDATE Cart c SET c.delFlag = false, c.qty = :qty WHERE c.member.email = :email AND c.product.pno = :pno")
-    void restoreCartItem(@Param("email") String email, @Param("pno") Long pno, @Param("qty") int qty);
 
 }
