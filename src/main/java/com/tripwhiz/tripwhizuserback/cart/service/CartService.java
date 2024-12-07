@@ -34,30 +34,34 @@ public class CartService {
 
     // 장바구니에 물건 추가
     public void addToCart(CartListDTO cartListDTO) {
-
         Product product = Product.builder().pno(cartListDTO.getPno()).build();
         MemberEntity member = MemberEntity.builder().email(cartListDTO.getEmail()).build();
 
-        // 장바구니에서 해당 제품 찾기
-        Optional<Cart> existingCart = cartRepository.findByProduct(cartListDTO.getPno());
+        // 장바구니에서 해당 제품 찾기 (del_flag 고려)
+        Optional<Cart> existingCart = cartRepository.findByMemberEmailAndProductPno(cartListDTO.getEmail(), cartListDTO.getPno());
 
         if (existingCart.isPresent()) {
-            // 기존 제품이 있으면 수량 업데이트
             Cart cart = existingCart.get();
 //            cart.setQty();
-            cart.setQty(cart.getQty() + cartListDTO.getQty()); // 수량 업데이트
-            cartRepository.save(cart); // 변경사항 저장
+            if (cart.isDelFlag()) {
+                // del_flag가 true인 경우 다시 활성화
+                cartRepository.restoreCartItem(cartListDTO.getEmail(), cartListDTO.getPno(), cartListDTO.getQty()); // del_flag false로 변경
+            } else {
+                // 기존 제품이 활성화 상태라면 수량 업데이트
+                cart.setQty(cart.getQty() + cartListDTO.getQty());
+            }
         } else {
             // 없으면 새로 추가
             Cart cart = Cart.builder()
                     .product(product)
                     .qty(cartListDTO.getQty())
                     .member(member)
+                    .delFlag(false) // 새로 추가 시 del_flag는 false
                     .build();
             cartRepository.save(cart);
         }
-
     }
+
 
     // 장바구니 목록 조회
     public List<CartListDTO> list(String email) {

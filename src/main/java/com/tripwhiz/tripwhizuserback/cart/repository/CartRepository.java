@@ -39,4 +39,9 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
 //            "FROM Cart c")
 //    List<CartProductDTO> findAllCartItems();
 
+    // 특정 제품의 delFlag를 false로 변경하여 장바구니에 다시 추가
+    @Modifying
+    @Query("UPDATE Cart c SET c.delFlag = false, c.qty = :qty WHERE c.member.email = :email AND c.product.pno = :pno")
+    void restoreCartItem(@Param("email") String email, @Param("pno") Long pno, @Param("qty") int qty);
+
 }
