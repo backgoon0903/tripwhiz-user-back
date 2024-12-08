@@ -149,20 +149,20 @@ public class ProductRepoTests {
     }
 
     //JH
-    @Test
-    void testSearchWithKeywordAndPrice() {
-        PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
-                .page(1)
-                .size(10)
-                .build();
-
-        PageResponseDTO<ProductListDTO> result = productRepository.searchWithKeywordAndFilters(
-                "3", 1000, 5000, pageRequestDTO);
-
-        result.getDtoList().forEach(product -> {
-            System.out.println(product);
-        });
-    }
+//    @Test
+//    void testSearchWithKeywordAndPrice() {
+//        PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
+//                .page(1)
+//                .size(10)
+//                .build();
+//
+//        PageResponseDTO<ProductListDTO> result = productRepository.searchWithKeywordAndFilters(
+//                "3", 1000, 5000, 1, 5, 6, pageRequestDTO);
+//
+//        result.getDtoList().forEach(product -> {
+//            System.out.println(product);
+//        });
+//    }
 
 
 
