@@ -4,11 +4,14 @@ import com.tripwhiz.tripwhizuserback.category.domain.Category;
 import com.tripwhiz.tripwhizuserback.category.domain.SubCategory;
 import com.tripwhiz.tripwhizuserback.category.repository.CategoryRepository;
 import com.tripwhiz.tripwhizuserback.category.repository.SubCategoryRepository;
+import com.tripwhiz.tripwhizuserback.common.dto.PageRequestDTO;
+import com.tripwhiz.tripwhizuserback.common.dto.PageResponseDTO;
 import com.tripwhiz.tripwhizuserback.product.domain.Product;
 import com.tripwhiz.tripwhizuserback.product.domain.ProductTheme;
 import com.tripwhiz.tripwhizuserback.product.domain.ThemeCategory;
 
 
+import com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO;
 import com.tripwhiz.tripwhizuserback.util.file.domain.AttachFile;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
@@ -142,6 +145,22 @@ public class ProductRepoTests {
                     .build();
 
             productThemeRepository.save(productTheme); // 테마 저장
+        });
+    }
+
+    //JH
+    @Test
+    void testSearchWithKeywordAndPrice() {
+        PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
+                .page(1)
+                .size(10)
+                .build();
+
+        PageResponseDTO<ProductListDTO> result = productRepository.searchWithKeywordAndFilters(
+                "3", 1000, 5000, pageRequestDTO);
+
+        result.getDtoList().forEach(product -> {
+            System.out.println(product);
         });
     }
 
