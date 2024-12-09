@@ -171,9 +171,9 @@ public class OrderService {
 
 
     // 내 주문 리스트 조회
-    public PageResponseDTO<OrderListDTO> getUserOrders(String memberEmail, PageRequestDTO pageRequestDTO) {
+    public PageResponseDTO<OrderListDTO> getUserOrders(String email, PageRequestDTO pageRequestDTO) {
         Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize());
-        Page<Order> result = orderRepository.findByMemberEmail(memberEmail, pageable);
+        Page<Order> result = orderRepository.findByMemberEmail(email, pageable);
 
         List<OrderListDTO> dtoList = result.getContent().stream()
                 .map(order -> OrderListDTO.builder()

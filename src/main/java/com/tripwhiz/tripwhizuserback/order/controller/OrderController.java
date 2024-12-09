@@ -59,7 +59,7 @@ public class OrderController {
     // 내 주문 리스트 조회
     @GetMapping("/list")
     public ResponseEntity<PageResponseDTO<OrderListDTO>> getUserOrders(
-            @RequestParam @NotBlank(message = "Email cannot be blank") String email,
+            @RequestHeader @NotBlank(message = "Email cannot be blank") String email,
             @Valid PageRequestDTO pageRequestDTO) {
         PageResponseDTO<OrderListDTO> response = userOrderService.getUserOrders(email, pageRequestDTO);
         return ResponseEntity.ok(response);
