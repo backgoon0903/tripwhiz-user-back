@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
@@ -30,10 +32,11 @@ public class OrderController {
     @PostMapping("/create")
     @PreAuthorize("permitAll()")
     public ResponseEntity<?> createOrder(
-            @RequestParam @NotBlank(message = "Email cannot be blank") String email,
+            @RequestHeader @NotBlank(message = "Email cannot be blank") String email,
             @RequestParam Long spno,
             @RequestParam @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}",
                     message = "Invalid date format. Use yyyy-MM-ddTHH:mm") String pickUpDate) {
+
         try {
             // 주문 생성 서비스 호출
             Long orderNumber = userOrderService.createOrder(email, spno, LocalDateTime.parse(pickUpDate));

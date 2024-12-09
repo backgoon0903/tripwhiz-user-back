@@ -1,6 +1,8 @@
 package com.tripwhiz.tripwhizuserback.store.service;
 
 
+import com.tripwhiz.tripwhizuserback.manager.entity.StoreOwner;
+import com.tripwhiz.tripwhizuserback.manager.repository.StoreOwnerRepository;
 import com.tripwhiz.tripwhizuserback.store.domain.Spot;
 import com.tripwhiz.tripwhizuserback.store.dto.SpotDTO;
 import com.tripwhiz.tripwhizuserback.store.repository.SpotRepository;
@@ -14,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 public class SpotService {
 
     private final SpotRepository spotRepository;
+    private final StoreOwnerRepository storeOwnerRepository;
     private final RestTemplate restTemplate;
 
     @Value("${com.tripwhiz.admin.api.url}")
@@ -40,8 +42,22 @@ public class SpotService {
 
         List<SpotDTO> spotList = response.getBody();
 
+        log.info("Spot List: {}", spotList);
+
         if (spotList != null) {
             log.info("Successfully fetched {} spots from Admin Server", spotList.size());
+            // Spot 리스트를 로컬 데이터베이스에 저장
+            spotList.forEach(spotDTO -> {
+
+                StoreOwner storeOwner = storeOwnerRepository.findById(spotDTO.getSno())
+                        .orElseThrow(() -> new IllegalArgumentException("StoreOwner not found for sno: " + spotDTO.getSno()));
+
+                Spot spot = spotDTO.toEntity(storeOwner);
+                if (!spotRepository.existsById(spot.getSpno())) {
+                    spotRepository.save(spot);
+                    log.info("Saved Spot to local database: {}", spot);
+                }
+            });
         } else {
             log.warn("No spots retrieved from Admin Server");
         }

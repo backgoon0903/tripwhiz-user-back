@@ -149,7 +149,7 @@ public class OrderService {
             log.info("Serialized JSON before sending: {}", json);
 
             // REST 요청
-            restTemplate.postForEntity(adminApiUrl + "/api/user/order/receive", orderReadDTO, Void.class);
+            restTemplate.postForEntity(adminApiUrl + "/api/storeowner/order/receive", orderReadDTO, Void.class);
 
         } catch (JsonProcessingException e) {
             // JSON 직렬화 오류 처리
