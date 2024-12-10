@@ -43,14 +43,18 @@ public class CartController {
 //        return ResponseEntity.ok(cartItems);
 //    }
 
-    @PatchMapping("/changeQty")
-    public ResponseEntity<Void> changeQty(
-            @RequestParam Long pno,
-            @RequestParam int qty) {
 
-        cartService.changeQty(pno, qty);
-        return ResponseEntity.noContent().build(); // 204 No Content 반환
-    }
+@PatchMapping("/changeQty")
+public ResponseEntity<Void> changeQty(@RequestBody CartListDTO cartListDTO) {
+    Long pno = cartListDTO.getPno();
+    int qty = cartListDTO.getQty();
+
+    cartService.changeQty(pno, qty); // 서비스 호출
+    log.info("Changed quantity for product ID: {} to {}", pno, qty);
+
+    return ResponseEntity.noContent().build(); // 204 No Content 반환
+}
+
 
     @DeleteMapping("delete/{pno}")
     public ResponseEntity<Void> deleteByProduct(
@@ -70,19 +74,5 @@ public class CartController {
         log.info("Product deleted successfully");
         return ResponseEntity.noContent().build(); // 204 No Content 반환
     }
-
-    // 주문 요청
-//    @PostMapping("/send")
-//    public ResponseEntity<String> createOrder(@RequestHeader String email) {
-//        // 주문 생성 서비스 호출
-//        log.info("Received order creation request for email: {}", email);
-//
-//        cartService.sendCart(email);
-//
-//        log.info("Order successfully created and sent to Admin API for email: {}", email);
-//
-//        // 성공 응답 반환
-//        return ResponseEntity.ok("Order successfully created and sent to Admin API.");
-//    }
 
 }

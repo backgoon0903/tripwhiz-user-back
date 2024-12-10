@@ -46,7 +46,7 @@ public class MemberService {
             memberDTO.setName(member.getName());
             memberDTO.setPw(member.getPw());
 
-            String endpoint = "/api/member/save";
+            String endpoint = "/api/admin/member/save";
             String adminApiEndpoint = adminApiUrl + endpoint;
 
             HttpHeaders headers = new HttpHeaders();
