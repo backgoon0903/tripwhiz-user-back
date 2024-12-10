@@ -3,7 +3,6 @@ package com.tripwhiz.tripwhizuserback.cart.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tripwhiz.tripwhizuserback.cart.domain.Cart;
 import com.tripwhiz.tripwhizuserback.cart.dto.CartListDTO;
-import com.tripwhiz.tripwhizuserback.cart.dto.CartProductDTO;
 import com.tripwhiz.tripwhizuserback.cart.repository.CartRepository;
 import com.tripwhiz.tripwhizuserback.member.domain.MemberEntity;
 import com.tripwhiz.tripwhizuserback.product.domain.Product;
@@ -14,7 +13,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,20 +26,20 @@ public class CartService {
 
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
-    private final RestTemplate restTemplate;
+
 
     // application.yml 파일에서 User API URL을 불러와 변수에 저장
     @Value("${server.store.owner.base.url}")
     private String adminApiUrl;
 
     // 장바구니에 물건 추가
-    public void addToCart(CartProductDTO cartProductDTO) {
+    public void addToCart(CartListDTO cartListDTO) {
 
-        Product product = Product.builder().pno(cartProductDTO.getPno()).build();
-        MemberEntity member = MemberEntity.builder().email(cartProductDTO.getEmail()).build();
+        Product product = Product.builder().pno(cartListDTO.getPno()).build();
+        MemberEntity member = MemberEntity.builder().email(cartListDTO.getEmail()).build();
 
         // 장바구니에서 해당 제품 찾기
-        Optional<Cart> existingCart = cartRepository.findByProduct(cartProductDTO.getPno());
+        Optional<Cart> existingCart = cartRepository.findByProduct(cartListDTO.getPno());
 
         if (existingCart.isPresent()) {
             // 기존 제품이 있으면 수량 업데이트
@@ -51,7 +49,7 @@ public class CartService {
             // 없으면 새로 추가
             Cart cart = Cart.builder()
                     .product(product)
-                    .qty(cartProductDTO.getQty())
+                    .qty(cartListDTO.getQty())
                     .member(member)
                     .build();
             cartRepository.save(cart);
@@ -69,6 +67,8 @@ public class CartService {
                         .email(cart.getEmail())
                         .bno(cart.getBno())
                         .pno(cart.getPno())
+                        .pname(cart.getPname())
+                        .price(cart.getPrice())
                         .qty(cart.getQty())
                         .build())
                 .collect(Collectors.toList());
