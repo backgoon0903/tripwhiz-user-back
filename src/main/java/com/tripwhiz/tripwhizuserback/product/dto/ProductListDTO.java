@@ -23,6 +23,7 @@ public class ProductListDTO {
     private String pdesc;
     private Long cno;      // 상위 카테고리 ID
     private Long scno;  // 하위 카테고리 ID
+    private List<Long> tnos;
     private List<AttachFile> attachFiles; // JH
 
     public Product toEntity(Category category, SubCategory subCategory) {

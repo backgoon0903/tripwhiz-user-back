@@ -59,7 +59,7 @@ public class ProductRepoTests {
         // Step 3: 테마 카테고리 생성
         List<ThemeCategory> themeCategories = createThemeCategories();
 
-        // Step 4: 상품 생성
+//        // Step 4: 상품 생성
         createProducts(categories, subCategories, themeCategories);
     }
 
