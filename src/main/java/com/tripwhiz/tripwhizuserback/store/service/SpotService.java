@@ -1,6 +1,5 @@
 package com.tripwhiz.tripwhizuserback.store.service;
 
-
 import com.tripwhiz.tripwhizuserback.manager.entity.StoreOwner;
 import com.tripwhiz.tripwhizuserback.manager.repository.StoreOwnerRepository;
 import com.tripwhiz.tripwhizuserback.store.domain.Spot;
@@ -26,7 +25,7 @@ public class SpotService {
     private final StoreOwnerRepository storeOwnerRepository;
     private final RestTemplate restTemplate;
 
-    @Value("${com.tripwhiz.admin.api.url}")
+    @Value("${server.store.owner.base.url}")
     private String adminApiUrl;
 
     // 점주 서버를 통해 Spot 리스트 조회
@@ -70,7 +69,6 @@ public class SpotService {
     public SpotDTO read(Long spno) {
         Spot spot = spotRepository.findById(spno)
                 .orElseThrow(() -> new IllegalArgumentException("Spot with ID " + spno + " not found."));
-
 
         return SpotDTO.builder()
                 .spno(spot.getSpno())
