@@ -96,6 +96,38 @@ public class ProductController {
         return ResponseEntity.ok(productId);
     }
 
+    // 상품 수정
+    @PutMapping("/update/{pno}")
+    public ResponseEntity<Long> updateProduct(
+            @PathVariable Long pno,
+            @RequestPart("productListDTO") String productListDTOJson,
+            @RequestPart(value = "imageFiles", required = false) List<MultipartFile> imageFiles) throws JsonProcessingException, IOException {
+
+        // JSON 문자열을 객체로 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        ProductListDTO productListDTO = objectMapper.readValue(productListDTOJson, ProductListDTO.class);
+
+        log.info("Received product update request for PNO {}: {}", pno, productListDTO);
+
+        if (imageFiles != null) {
+            log.info("Received {} image files", imageFiles.size());
+        }
+
+        // 서비스 호출
+        Long updatedProductPno = productService.updateProduct(pno, productListDTO, imageFiles);
+
+        // 수정된 상품 ID 반환
+        return ResponseEntity.ok(updatedProductPno);
+    }
+
+    // 상품 삭제
+    @PutMapping("/delete/{pno}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long pno) {
+        log.info("Received product deletion request for PNO {}", pno);
+        productService.deleteProduct(pno);
+        return ResponseEntity.ok().build();
+    }
+
 
 }
 
