@@ -15,8 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
@@ -69,7 +67,7 @@ public class OrderController {
     @GetMapping("/details/{ono}")
     public ResponseEntity<?> getOrderDetails(
             @PathVariable Long ono,
-            @RequestParam @NotBlank(message = "Email cannot be blank") String email) {
+            @RequestHeader @NotBlank(message = "Email cannot be blank") String email) {
         try {
             OrderReadDTO orderDetails = userOrderService.getOrderDetails(ono, email);
             return ResponseEntity.ok(orderDetails);
@@ -83,7 +81,7 @@ public class OrderController {
     @PutMapping("/cancel/{ono}")
     public ResponseEntity<?> cancelOrder(
             @PathVariable Long ono,
-            @RequestParam @NotBlank(message = "Email cannot be blank") String email) {
+            @RequestHeader @NotBlank(message = "Email cannot be blank") String email) {
         try {
             userOrderService.cancelOrder(ono, email);
             return ResponseEntity.ok("주문이 성공적으로 취소되었습니다.");
@@ -98,7 +96,7 @@ public class OrderController {
     public ResponseEntity<?> changeSpot(
             @PathVariable Long ono,
             @RequestParam Long newSpotId,
-            @RequestParam @NotBlank(message = "Email cannot be blank") String email) {
+            @RequestHeader @NotBlank(message = "Email cannot be blank") String email) {
         try {
             userOrderService.changeSpot(ono, newSpotId, email);
             return ResponseEntity.ok("지점이 성공적으로 변경되었습니다.");
@@ -114,7 +112,7 @@ public class OrderController {
             @PathVariable Long ono,
             @RequestParam @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}",
                     message = "Invalid date format. Use yyyy-MM-ddTHH:mm") String newPickUpDate,
-            @RequestParam @NotBlank(message = "Email cannot be blank") String email) {
+            @RequestHeader @NotBlank(message = "Email cannot be blank") String email) {
         try {
             userOrderService.changePickUpDate(ono, LocalDateTime.parse(newPickUpDate), email);
             return ResponseEntity.ok("픽업 날짜가 성공적으로 변경되었습니다.");
