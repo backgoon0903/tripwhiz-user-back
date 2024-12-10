@@ -32,30 +32,43 @@ public class CartService {
     @Value("${server.store.owner.base.url}")
     private String adminApiUrl;
 
+//    // 장바구니에 물건 추가
+//    public void addToCart(CartListDTO cartListDTO) {
+//        Product product = Product.builder().pno(cartListDTO.getPno()).build();
+
     // 장바구니에 물건 추가
     public void addToCart(CartListDTO cartListDTO) {
-
         Product product = Product.builder().pno(cartListDTO.getPno()).build();
         MemberEntity member = MemberEntity.builder().email(cartListDTO.getEmail()).build();
 
-        // 장바구니에서 해당 제품 찾기
-        Optional<Cart> existingCart = cartRepository.findByProduct(cartListDTO.getPno());
+        Optional<Cart> existingCart = cartRepository.findByMemberEmailAndProductPno(cartListDTO.getEmail(), cartListDTO.getPno());
 
         if (existingCart.isPresent()) {
-            // 기존 제품이 있으면 수량 업데이트
             Cart cart = existingCart.get();
-//            cart.setQty();
+
+            if (cart.isDelFlag()) {
+                // del_flag가 true인 경우 다시 활성화 및 수량 설정
+                cart.setDelFlag(false);
+                cart.setQty(cartListDTO.getQty());
+            } else {
+                // 기존 제품이 활성화 상태라면 수량 업데이트
+                log.info("Updating qty for product {}: Current Qty = {}, New Qty = {}",
+                        cart.getProduct().getPno(), cart.getQty(), cartListDTO.getQty());
+                cart.setQty(cartListDTO.getQty());
+            }
         } else {
             // 없으면 새로 추가
             Cart cart = Cart.builder()
                     .product(product)
                     .qty(cartListDTO.getQty())
                     .member(member)
+                    .delFlag(false)
                     .build();
             cartRepository.save(cart);
         }
-
     }
+
+
 
     // 장바구니 목록 조회
     public List<CartListDTO> list(String email) {
@@ -84,17 +97,15 @@ public class CartService {
 
     // 상품 수량 변경
     public void changeQty(Long pno, int qty) {
-        // 장바구니 항목 조회
-        Cart cart = cartRepository.findById(pno)
-                .orElseThrow(() -> new IllegalArgumentException("Cart item not found"));
-
-        // 수량 변경
         if (qty < 0) {
             throw new IllegalArgumentException("Quantity cannot be less than zero.");
         }
 
-        cart.setQty(qty); // 새로운 수량 설정
-        cartRepository.save(cart); // 변경 저장
+        Cart cart = cartRepository.findById(pno)
+                .orElseThrow(() -> new IllegalArgumentException("Cart item not found for product ID: " + pno));
+
+        cart.setQty(qty);
+        log.info("Changed quantity for product ID: {} to {}", pno, qty);
     }
 
     // 장바구니 전체 비우기
