@@ -54,6 +54,11 @@ public class CustomSecurityConfig {
             headers.addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Embedder-Policy", "require-corp"));
         });
 
+        http.authorizeHttpRequests(auth -> {
+            auth
+                    .requestMatchers("/health").permitAll() // /health 경로는 인증 없이 허용
+                    .anyRequest().authenticated();         // 다른 모든 경로는 인증 필요
+        });
         return http.build();
     }
 
