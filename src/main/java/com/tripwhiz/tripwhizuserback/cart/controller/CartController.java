@@ -75,18 +75,4 @@ public ResponseEntity<Void> changeQty(@RequestBody CartListDTO cartListDTO) {
         return ResponseEntity.noContent().build(); // 204 No Content 반환
     }
 
-    // 주문 요청
-//    @PostMapping("/send")
-//    public ResponseEntity<String> createOrder(@RequestHeader String email) {
-//        // 주문 생성 서비스 호출
-//        log.info("Received order creation request for email: {}", email);
-//
-//        cartService.sendCart(email);
-//
-//        log.info("Order successfully created and sent to Admin API for email: {}", email);
-//
-//        // 성공 응답 반환
-//        return ResponseEntity.ok("Order successfully created and sent to Admin API.");
-//    }
-
 }
