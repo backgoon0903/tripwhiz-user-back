@@ -1,6 +1,7 @@
 package com.tripwhiz.tripwhizuserback.store.domain;
 
 
+import com.tripwhiz.tripwhizuserback.manager.entity.StoreOwner;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,13 +22,28 @@ public class Spot {
     @Column(name = "spotname", nullable = false, length = 50)
     private String spotname; // 지점 이름
 
-    @Column(name = "address", length = 100)
+    @Column(name = "address", length = 500)
     private String address; // 지점 주소
 
-    @Column(name = "tel", length = 50)
-    private String tel; // 지점 전화번호
+//    @Column(name = "tel", length = 50)
+//    private String tel; // 지점 전화번호
+
+    @Column(name = "url", nullable = false)
+    private String url; // 크롤링해서 받아오는 구글맵 경로
+
+    @Column(name = "latitude", nullable = true) // 위도
+    private Double latitude;
+
+    @Column(name = "longitude", nullable = true) // 경도
+    private Double longitude;
+
 
     @Column(name = "del_flag", length = 1)
     private boolean delFlag; // 삭제 여부
+
+    @ManyToOne
+    @JoinColumn(name = "sno", nullable = false)
+    private StoreOwner storeowner; // 점주
+
 
 }

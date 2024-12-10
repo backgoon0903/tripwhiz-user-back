@@ -8,9 +8,13 @@ import com.tripwhiz.tripwhizuserback.common.dto.PageRequestDTO;
 import com.tripwhiz.tripwhizuserback.common.dto.PageResponseDTO;
 import com.tripwhiz.tripwhizuserback.product.domain.Product;
 import com.tripwhiz.tripwhizuserback.product.domain.Product;
+import com.tripwhiz.tripwhizuserback.product.domain.ProductTheme;
+import com.tripwhiz.tripwhizuserback.product.domain.ThemeCategory;
 import com.tripwhiz.tripwhizuserback.product.dto.ProductListDTO;
 import com.tripwhiz.tripwhizuserback.product.dto.ProductReadDTO;
 import com.tripwhiz.tripwhizuserback.product.repository.ProductRepository;
+import com.tripwhiz.tripwhizuserback.product.repository.ProductThemeRepository;
+import com.tripwhiz.tripwhizuserback.product.repository.ThemeCategoryRepository;
 import com.tripwhiz.tripwhizuserback.util.CustomFileUtil;
 import com.tripwhiz.tripwhizuserback.util.file.domain.AttachFile;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +39,8 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final SubCategoryRepository subCategoryRepository;
+    private final ThemeCategoryRepository themeCategoryRepository;
+    private final ProductThemeRepository productThemeRepository;
     private final CustomFileUtil customFileUtil;
 
 
@@ -52,15 +58,27 @@ public class ProductService {
         return productRepository.findByFiltering(tno, cno, scno, pageRequestDTO);
     }
 
+    // 상품 키워드 검색 및 가격 필터링(JH)
+    public PageResponseDTO<ProductListDTO> searchWithFilters(String keyword, Integer minPrice, Integer maxPrice,
+                                                             Long tno, Long cno, Long scno, PageRequestDTO pageRequestDTO) {
+        log.info("상품 키워드 검색 및 가격 필터링 실행 - keyword: {}, minPrice: {}, maxPrice: {}", keyword, minPrice, maxPrice);
+
+        return productRepository.searchWithKeywordAndFilters(keyword, minPrice, maxPrice, tno, cno, scno, pageRequestDTO);
+    }
+
     // 상품 생성
     public Long createProduct(ProductListDTO productListDTO, List<MultipartFile> imageFiles) throws IOException {
-        // Category와 SubCategory를 조회
+
+        log.info("productListDTO: {}", productListDTO);
+        log.info("imageFiles: {}", imageFiles != null ? imageFiles.size() : 0);
+
+        // Category와 SubCategory 조회
         Category category = categoryRepository.findById(productListDTO.getCno())
                 .orElseThrow(() -> new RuntimeException("Category not found with ID: " + productListDTO.getCno()));
         SubCategory subCategory = subCategoryRepository.findById(productListDTO.getScno())
                 .orElseThrow(() -> new RuntimeException("SubCategory not found with ID: " + productListDTO.getScno()));
 
-        // toEntity 호출 시 Category와 SubCategory 전달
+        // Product 엔티티 생성 및 저장
         Product product = productListDTO.toEntity(category, subCategory);
 
         for (int i = 0; i < imageFiles.size(); i++) {
@@ -73,10 +91,30 @@ public class ProductService {
         }
 
         Product savedProduct = productRepository.save(product);
+        log.info("Product saved with ID: {}", savedProduct.getPno());
 
-        log.info("Product created with ID: {}", savedProduct.getPno());
+        // 입력된 테마 카테고리(Tnos) 처리
+        List<Long> tnos = productListDTO.getTnos();
+        log.info("ThemeCategory IDs to process: {}", tnos);
+
+        for (Long tno : tnos) {
+            ThemeCategory themeCategory = themeCategoryRepository.findById(tno)
+                    .orElseThrow(() -> new RuntimeException("ThemeCategory not found with ID: " + tno));
+
+            // ProductTheme 생성 및 저장
+            ProductTheme productTheme = ProductTheme.builder()
+                    .product(savedProduct) // 현재 Product만 매핑
+                    .themeCategory(themeCategory)
+                    .build();
+            productThemeRepository.save(productTheme);
+
+            log.info("ProductTheme saved: Product ID = {}, ThemeCategory ID = {}", savedProduct.getPno(), tno);
+        }
+
         return savedProduct.getPno();
     }
+
+
 
     // 상품 수정
     public Long updateProduct(Long pno, ProductListDTO productListDTO, List<MultipartFile> imageFiles) throws IOException {

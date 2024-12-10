@@ -55,6 +55,10 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-admin:9.3.0'
 
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.1'
+
+
 }
 
 tasks.named('test') {

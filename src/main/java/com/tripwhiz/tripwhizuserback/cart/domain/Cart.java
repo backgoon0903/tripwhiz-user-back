@@ -44,4 +44,9 @@ public class Cart {
         this.delFlag = true;
     }
 
+    // 필요시 사용할 delFlag setter
+    public void setDelFlag(boolean delFlag) {
+        this.delFlag = delFlag;
+    }
+
 }
