@@ -56,8 +56,8 @@ public class CustomSecurityConfig {
 
         http.authorizeHttpRequests(auth -> {
             auth
-                    .requestMatchers("/health").permitAll() // /health 경로는 인증 없이 허용
-                    .anyRequest().authenticated();         // 다른 모든 경로는 인증 필요
+                    .requestMatchers("/").permitAll() // /health 경로는 인증 없이 허용
+                    .anyRequest().anonymous();         // 다른 모든 경로는 인증 필요
         });
         return http.build();
     }
