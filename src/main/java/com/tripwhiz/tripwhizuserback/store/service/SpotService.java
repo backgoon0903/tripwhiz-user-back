@@ -1,6 +1,5 @@
 package com.tripwhiz.tripwhizuserback.store.service;
 
-
 import com.tripwhiz.tripwhizuserback.manager.entity.StoreOwner;
 import com.tripwhiz.tripwhizuserback.manager.repository.StoreOwnerRepository;
 import com.tripwhiz.tripwhizuserback.store.domain.Spot;
@@ -70,7 +69,6 @@ public class SpotService {
     public SpotDTO read(Long spno) {
         Spot spot = spotRepository.findById(spno)
                 .orElseThrow(() -> new IllegalArgumentException("Spot with ID " + spno + " not found."));
-
 
         return SpotDTO.builder()
                 .spno(spot.getSpno())
