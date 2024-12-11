@@ -46,11 +46,14 @@ public class CartController {
 
 @PatchMapping("/changeQty")
 public ResponseEntity<Void> changeQty(@RequestBody CartListDTO cartListDTO) {
+    log.info("Received changeQty request: {}", cartListDTO);
+
+    String email = cartListDTO.getEmail();
     Long pno = cartListDTO.getPno();
     int qty = cartListDTO.getQty();
 
-    cartService.changeQty(pno, qty); // 서비스 호출
-    log.info("Changed quantity for product ID: {} to {}", pno, qty);
+    cartService.changeQty(email, pno, qty); // 서비스 호출
+    log.info("Changed quantity for product ID: {} to {} by user: {}", pno, qty, email);
 
     return ResponseEntity.noContent().build(); // 204 No Content 반환
 }
