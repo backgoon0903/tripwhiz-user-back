@@ -44,16 +44,24 @@ public class CartService {
         if (existingCart.isPresent()) {
             Cart cart = existingCart.get();
 
+//            if (cart.isDelFlag()) {
+//                // del_flag가 true인 경우 다시 활성화 및 수량 설정
+//                cart.setDelFlag(false);
+//                cart.setQty(cart.getQty() + cartListDTO.getQty()); // 기존 수량에 새로운 수량 추가
+//            } else {
+//                // 기존 제품이 활성화 상태라면 수량 업데이트
+//                log.info("Cart updated for product {}: Current Qty = {}, Added Qty = {}, delFlag = {}",
+//                        cart.getProduct().getPno(), cart.getQty(), cartListDTO.getQty());
+//                cart.setQty(cart.getQty() + cartListDTO.getQty());
+//            }
             if (cart.isDelFlag()) {
                 // del_flag가 true인 경우 다시 활성화 및 수량 설정
                 cart.setDelFlag(false);
-                cart.setQty(cartListDTO.getQty());
-            } else {
-                // 기존 제품이 활성화 상태라면 수량 업데이트
-                log.info("Updating qty for product {}: Current Qty = {}, New Qty = {}",
-                        cart.getProduct().getPno(), cart.getQty(), cartListDTO.getQty());
-                cart.setQty(cartListDTO.getQty());
             }
+
+            cart.setQty(cart.getQty() + cartListDTO.getQty()); // 기존 수량에 새로운 수량 추가
+            log.info("Updated qty for product {}: Current Qty = {}, Added Qty = {}, delFlag = {}",
+                    cart.getProduct().getPno(), cart.getQty(), cartListDTO.getQty(), cart.isDelFlag());
         } else {
             // 없으면 새로 추가
             Cart cart = Cart.builder()
@@ -102,7 +110,13 @@ public class CartService {
         Cart cart = cartRepository.findById(pno)
                 .orElseThrow(() -> new IllegalArgumentException("Cart item not found for product ID: " + pno));
 
-        cart.setQty(qty);
+//        cart.setQty(qty);
+        if (qty == 0) {
+            cart.setDelFlag(true); // 수량이 0이면 삭제 플래그 활성화
+        } else {
+            cart.setQty(qty); // 수량 설정
+        }
+
         log.info("Changed quantity for product ID: {} to {}", pno, qty);
     }
 
