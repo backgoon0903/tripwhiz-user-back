@@ -26,7 +26,7 @@ public class SpotService {
     private final StoreOwnerRepository storeOwnerRepository;
     private final RestTemplate restTemplate;
 
-    @Value("${com.tripwhiz.admin.api.url}")
+    @Value("${server.store.owner.base.url}")
     private String adminApiUrl;
 
     // 점주 서버를 통해 Spot 리스트 조회
