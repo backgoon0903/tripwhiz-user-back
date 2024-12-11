@@ -102,12 +102,13 @@ public class CartService {
     }
 
     // 상품 수량 변경
-    public void changeQty(Long pno, int qty) {
+    public void changeQty(String email, Long pno, int qty) {
         if (qty < 0) {
             throw new IllegalArgumentException("Quantity cannot be less than zero.");
         }
 
-        Cart cart = cartRepository.findById(pno)
+        log.info("Changing quantity for email: {}, product ID: {}, quantity: {}", email, pno, qty);
+        Cart cart = cartRepository.findByMemberEmailAndProductPno(email, pno)
                 .orElseThrow(() -> new IllegalArgumentException("Cart item not found for product ID: " + pno));
 
 //        cart.setQty(qty);
@@ -117,6 +118,7 @@ public class CartService {
             cart.setQty(qty); // 수량 설정
         }
 
+        cartRepository.save(cart); // 변경 사항 저장
         log.info("Changed quantity for product ID: {} to {}", pno, qty);
     }
 
