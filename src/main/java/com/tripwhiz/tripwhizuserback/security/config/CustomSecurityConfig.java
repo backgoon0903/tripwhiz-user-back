@@ -54,6 +54,11 @@ public class CustomSecurityConfig {
             headers.addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Embedder-Policy", "require-corp"));
         });
 
+        http.authorizeHttpRequests(auth -> {
+            auth
+                    .requestMatchers("/").permitAll() // /health 경로는 인증 없이 허용
+                    .anyRequest().anonymous();         // 다른 모든 경로는 인증 필요
+        });
         return http.build();
     }
 
@@ -64,7 +69,7 @@ public class CustomSecurityConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
         corsConfiguration.setAllowedOriginPatterns(List.of("*")); // 모든 출처에서의 요청을 허용
-        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"));
+        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"));
         corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "email"));
         corsConfiguration.setAllowCredentials(true);
 
