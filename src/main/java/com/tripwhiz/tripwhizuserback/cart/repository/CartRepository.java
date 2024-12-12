@@ -21,8 +21,8 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     List<CartListDTO> findCartItemsByMemberEmail(@Param("email") String email);
 
     // 특정 제품이 장바구니에 있는지 확인 (회원 고려 X)
-    @Query("SELECT c FROM Cart c WHERE c.product.pno = :pno")
-    Optional<Cart> findByProduct(Long pno);
+    @Query("SELECT c FROM Cart c WHERE c.product.pno = :pno AND c.delFlag = false")
+    Optional<Cart> findByProductPno(@Param("pno") Long pno);
 
     // 특정 제품이 장바구니에 있는지 확인 (회원 고려 O)
     @Query("SELECT c FROM Cart c WHERE c.member.email = :email AND c.product.pno = :pno AND c.delFlag = false")
