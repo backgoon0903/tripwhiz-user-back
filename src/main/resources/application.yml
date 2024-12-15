@@ -13,6 +13,19 @@ spring:
       maximum-pool-size: 5
       connection-timeout: 5000
 
+
+#  datasource:
+#    driver-class-name: org.mariadb.jdbc.Driver
+##    url: jdbc:mariadb://tripwhiz.cv9k7s92hqrr.ap-northeast-2.rds.amazonaws.com:13306/tripwhiz
+#    url: jdbc:mariadb://localhost:13306/mj
+#    username: mj
+#    password: mj
+#    hikari:
+#      minimum-idle: 2
+#      maximum-pool-size: 5
+#      connection-timeout: 5000
+
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -62,4 +75,4 @@ server:
   store:
     owner:
       base:
-        url: https://tripwhiz.store # 로컬 환경 URL
+        url: http://localhost:8082 # 로컬 환경 URL

@@ -28,6 +28,55 @@ public class SpotService {
     @Value("${server.store.owner.base.url}")
     private String adminApiUrl;
 
+    // 어드민 서버에서 Spot 데이터 동기화
+    public void syncSpotsFromAdmin() {
+        log.info("Fetching Spot List from Admin Server: {}", adminApiUrl);
+
+        // 어드민 서버의 Spot 데이터 가져오기
+        ResponseEntity<List<SpotDTO>> response = restTemplate.exchange(
+                adminApiUrl + "/api/admin/spot/user/list",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<SpotDTO>>() {}
+        );
+
+        List<SpotDTO> spotList = response.getBody();
+        if (spotList == null || spotList.isEmpty()) {
+            log.warn("No spots retrieved from Admin Server");
+            return;
+        }
+
+        log.info("Fetched {} spots from Admin Server", spotList.size());
+
+        // Spot 및 StoreOwner 데이터를 동기화
+        spotList.forEach(spotDTO -> {
+            StoreOwner storeOwner = storeOwnerRepository.findById(spotDTO.getSno())
+                    .orElseGet(() -> {
+                        log.info("Creating new StoreOwner: {}", spotDTO.getSname());
+                        return storeOwnerRepository.save(StoreOwner.builder()
+                                .sno(spotDTO.getSno())
+                                .sname(spotDTO.getSname())
+                                .build());
+                    });
+
+            Spot spot = Spot.builder()
+                    .spno(spotDTO.getSpno())
+                    .spotname(spotDTO.getSpotname())
+                    .address(spotDTO.getAddress())
+                    .url(spotDTO.getUrl())
+                    .latitude(spotDTO.getLatitude())
+                    .longitude(spotDTO.getLongitude())
+                    .storeowner(storeOwner)
+                    .build();
+
+            // Spot이 존재하지 않는 경우에만 저장
+            if (!spotRepository.existsById(spot.getSpno())) {
+                spotRepository.save(spot);
+                log.info("Saved Spot to local database: {}", spot);
+            }
+        });
+    }
+
     // 점주 서버를 통해 Spot 리스트 조회
     public List<SpotDTO> fetchSpotListFromAdminServer() {
         log.info("Fetching Spot List from Admin Server: {}", adminApiUrl);
