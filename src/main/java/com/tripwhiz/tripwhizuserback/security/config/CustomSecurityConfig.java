@@ -48,11 +48,14 @@ public class CustomSecurityConfig {
             cors.configurationSource(corsConfigurationSource());
         });
 
-        // COOP, COEP 헤더 추가
-        http.headers(headers -> {
-            headers.addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Opener-Policy", "same-origin-allow-popups"));
-            headers.addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Embedder-Policy", "require-corp"));
-        });
+//        // COOP, COEP 헤더 추가
+//        http.headers(headers -> {
+//            headers.addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Opener-Policy", "same-origin-allow-popups"));
+//            headers.addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Embedder-Policy", "require-corp"));
+//        });
+        http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
+
+
 
         http.authorizeHttpRequests(auth -> {
             auth
