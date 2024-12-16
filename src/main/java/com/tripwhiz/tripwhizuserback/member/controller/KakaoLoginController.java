@@ -172,7 +172,11 @@ public class KakaoLoginController {
     public ResponseEntity<TokenResponseDTO> kakaoToken(@RequestParam String code) {
         log.info("Received Kakao Authorization Code: {}", code);
 
-        String accessToken = code; // Kakao API를 통해 Access Token 요청 로직 추가 필요
+        // Access Token 요청
+        String accessToken = kakaoService.getAccessToken(code);
+        log.info("Access Token: {}", accessToken);
+
+        // 사용자 정보 요청 및 토큰 생성
         MemberDTO memberDTO = kakaoService.authKakao(accessToken);
 
         Map<String, Object> claimMap = Map.of("email", memberDTO.getEmail());
@@ -188,4 +192,5 @@ public class KakaoLoginController {
         return ResponseEntity.ok(tokenResponseDTO);
     }
 }
+
 

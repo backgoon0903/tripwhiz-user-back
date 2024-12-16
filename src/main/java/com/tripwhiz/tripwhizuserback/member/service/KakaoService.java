@@ -120,7 +120,6 @@
 //
 //
 //}
-
 package com.tripwhiz.tripwhizuserback.member.service;
 
 import com.tripwhiz.tripwhizuserback.member.domain.MemberEntity;
@@ -131,10 +130,13 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -145,6 +147,38 @@ import java.util.UUID;
 public class KakaoService {
 
     private final MemberRepository memberRepository;
+
+    public String getAccessToken(String code) {
+        String tokenUrl = "https://kauth.kakao.com/oauth/token";
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", "authorization_code");
+        params.add("client_id", "{REST_API_KEY}"); // 카카오 개발자 콘솔의 REST API 키
+        params.add("redirect_uri", "https://tripwhiz.shop/api/member/kakao");
+        params.add("code", code);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+
+        try {
+            ResponseEntity<Map> response = restTemplate.postForEntity(tokenUrl, request, Map.class);
+
+            // Access Token 추출
+            Map<String, Object> body = response.getBody();
+            if (body != null && body.containsKey("access_token")) {
+                return (String) body.get("access_token");
+            } else {
+                throw new RuntimeException("Failed to retrieve Access Token: " + body);
+            }
+        } catch (Exception e) {
+            log.error("Error fetching Access Token: ", e);
+            throw new RuntimeException("Error fetching Access Token");
+        }
+    }
 
     public MemberDTO authKakao(String accessToken) {
         log.info("---------authKakao START-------");
@@ -227,4 +261,3 @@ public class KakaoService {
         }
     }
 }
-
