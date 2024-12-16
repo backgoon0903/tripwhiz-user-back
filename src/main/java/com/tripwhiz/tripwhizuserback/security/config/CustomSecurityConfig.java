@@ -69,7 +69,7 @@ public class CustomSecurityConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
 
-        corsConfiguration.setAllowedOriginPatterns(List.of("https://tripwhiz.store", "https://tripwhiz.shop"));
+        corsConfiguration.setAllowedOriginPatterns(List.of("https://tripwhiz.store", "https://tripwhiz.shop", "http://localhost:5173"));
         corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"));
         corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "email"));
         corsConfiguration.setAllowCredentials(true);
