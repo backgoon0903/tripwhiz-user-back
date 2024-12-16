@@ -1,12 +1,14 @@
 package com.tripwhiz.tripwhizuserback.manager.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
+@Builder
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "storeowner")
 public class StoreOwner {
 
