@@ -47,5 +47,13 @@ public class SpotController {
         }
 
         return ResponseEntity.ok(spotList);
+
+
+    }
+
+    @PostMapping("/sync")
+    public ResponseEntity<Void> syncFromAdmin() {
+        spotService.syncSpotsFromAdmin();
+        return ResponseEntity.ok().build();
     }
 }
