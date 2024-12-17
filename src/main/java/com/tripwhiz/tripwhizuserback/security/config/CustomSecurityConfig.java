@@ -48,11 +48,14 @@ public class CustomSecurityConfig {
             cors.configurationSource(corsConfigurationSource());
         });
 
-        // COOP, COEP 헤더 추가
-        http.headers(headers -> {
-            headers.addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Opener-Policy", "same-origin-allow-popups"));
-            headers.addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Embedder-Policy", "require-corp"));
-        });
+//        // COOP, COEP 헤더 추가
+//        http.headers(headers -> {
+//            headers.addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Opener-Policy", "same-origin-allow-popups"));
+//            headers.addHeaderWriter(new StaticHeadersWriter("Cross-Origin-Embedder-Policy", "require-corp"));
+//        });
+        http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
+
+
 
         http.authorizeHttpRequests(auth -> {
             auth
@@ -67,9 +70,9 @@ public class CustomSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-
-
-        corsConfiguration.setAllowedOriginPatterns(List.of("https://tripwhiz.store", "https://tripwhiz.shop", "http://localhost:5173"));
+        corsConfiguration.setAllowedOriginPatterns(List.of("")); // 모든 출처에서의 요청을 허용
+//        corsConfiguration.setAllowedOriginPatterns(List.of("https://tripwhiz.store", "https://tripwhiz.shop"));
+        corsConfiguration.setAllowedOriginPatterns(List.of("http://localhost:3000", "http://localhost:5173"));
         corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"));
         corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "email"));
         corsConfiguration.setAllowCredentials(true);
