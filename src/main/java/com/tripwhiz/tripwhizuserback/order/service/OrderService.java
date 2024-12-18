@@ -59,14 +59,21 @@ public class OrderService {
     // 주문 생성
     public Long createOrder(String email, Long spno, LocalDateTime pickUpDate) {
 
+        log.info("77777777777777777777777777777777777777777777");
+        log.info(email);
+        log.info(spno);
+        log.info(pickUpDate);
+
         // 1. Cart 데이터 가져오기
         List<CartListDTO> cartItems = cartRepository.findCartItemsByMemberEmail(email);
+
+        log.info(cartItems);
 
         // 2. Spot 객체 가져오기
         Spot spot = spotRepository.findById(spno)
                 .orElseThrow(() -> new IllegalArgumentException("해당 지점이 존재하지 않습니다."));
 
-        MemberEntity member = memberRepository.findByEmail(cartItems.get(0).getEmail())
+        MemberEntity member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
 
         if (cartItems.isEmpty()) {
