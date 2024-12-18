@@ -59,7 +59,7 @@ public class OrderService {
     // 주문 생성
     public Long createOrder(String email, Long spno, LocalDateTime pickUpDate) {
 
-        log.info("77777777777777777777777777777777777777777777");
+        log.info("777777777777777777777777777777777777777775877");
         log.info(email);
         log.info(spno);
         log.info(pickUpDate);
