@@ -71,8 +71,8 @@ public class CustomSecurityConfig {
 
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedOriginPatterns(List.of("")); // 모든 출처에서의 요청을 허용
-//        corsConfiguration.setAllowedOriginPatterns(List.of("https://tripwhiz.store", "https://tripwhiz.shop"));
-        corsConfiguration.setAllowedOriginPatterns(List.of("http://localhost:3000", "http://localhost:5173"));
+        corsConfiguration.setAllowedOriginPatterns(List.of("https://tripwhiz.store", "https://tripwhiz.shop"));
+//        corsConfiguration.setAllowedOriginPatterns(List.of("http://localhost:3000", "http://localhost:5173"));
         corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"));
         corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "email"));
         corsConfiguration.setAllowCredentials(true);
