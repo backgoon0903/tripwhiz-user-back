@@ -5,8 +5,6 @@ import com.tripwhiz.tripwhizuserback.fcm.service.FCMService;
 import com.tripwhiz.tripwhizuserback.luggage.dto.LuggageStorageDTO;
 import com.tripwhiz.tripwhizuserback.luggage.entity.LuggageStorage;
 import com.tripwhiz.tripwhizuserback.luggage.repository.LuggageStorageRepository;
-import com.tripwhiz.tripwhizuserback.store.domain.Spot;
-import com.tripwhiz.tripwhizuserback.store.repository.SpotRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,40 +12,36 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-@Log4j2
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Log4j2
 public class LuggageStorageService {
 
     private final LuggageStorageRepository luggageStorageRepository;
     private final RestTemplate restTemplate;
     private final FCMService fcmService;
-    private final SpotRepository spotRepository;
 
     @Value("${server.store.owner.base.url}")
     private String storeOwnerBaseUrl;
 
-    private static final String STORE_OWNER_TOKEN = "ejNdaRA-F63OJWcgxg9Kgd:APA91bExX1NC-_ONgAOLw3-nIw7aam6UoOyu3xm5WDroQ4_ixpOshWpTL9OZYXl9RGByU1N5WK5t3L5e40AY5LEhDRxA3Cq4PnDpVc7xntPwzzizbZQp0ic";
-
     public LuggageStorageDTO createLuggageStorage(LuggageStorage luggageStorage) {
-        // 로컬 데이터베이스에서 Spot 확인
-        Spot spot = spotRepository.findById(luggageStorage.getStorageSpot().getSpno())
-                .orElseThrow(() -> new IllegalArgumentException("Spot not found for ID: " + luggageStorage.getStorageSpot().getSpno()));
+        // DB 저장
+        LuggageStorage savedLuggage = luggageStorageRepository.save(luggageStorage);
 
-        // 수화물 저장
-        luggageStorage.setStorageSpot(spot);
-        luggageStorageRepository.save(luggageStorage);
+        // 어드민 서버로 데이터 전송
+        sendLuggageToAdmin(savedLuggage);
 
-        // 어드민 서버로 요청 전송
-        sendLuggageToAdmin(luggageStorage);
+        // FCM 알림 전송
+        sendNotificationToStoreOwner(savedLuggage);
 
-        // 스토어오너에게 알림 발송
-        sendStoreOwnerNotification(luggageStorage);
-
+        // 저장된 데이터를 DTO로 변환하여 반환
         return LuggageStorageDTO.builder()
-                .storageSpot(luggageStorage.getStorageSpot())
-                .email(luggageStorage.getEmail())
+                .lsno(savedLuggage.getLsno())
+                .email(savedLuggage.getEmail())
+                .storageDate(savedLuggage.getStorageDate())
+                .status(savedLuggage.getStatus())
+                .storageSpot(savedLuggage.getStorageSpot())
                 .build();
     }
 
@@ -55,27 +49,28 @@ public class LuggageStorageService {
         String url = storeOwnerBaseUrl + "/api/storeowner/luggagestorage/create";
         try {
             restTemplate.postForObject(url, luggageStorage, Void.class);
-            log.info("LuggageStorage sent to Admin Server: {}", luggageStorage.getLsno());
+            log.info("어드민 서버에 수화물 데이터 전송 완료: {}", luggageStorage.getLsno());
         } catch (Exception e) {
-            log.error("Failed to send LuggageStorage to Admin Server", e);
+            log.error("어드민 서버 전송 실패: {}", e.getMessage());
         }
     }
 
-    private void sendStoreOwnerNotification(LuggageStorage luggageStorage) {
+    private void sendNotificationToStoreOwner(LuggageStorage luggageStorage) {
         String title = "새로운 수화물 보관 요청";
-        String body = "보관 지점: " + luggageStorage.getStorageSpot().getSpotname();
+        String body = "보관 장소: " + luggageStorage.getStorageSpot().getSpotname();
 
         FCMRequestDTO request = FCMRequestDTO.builder()
-                .token(STORE_OWNER_TOKEN)
+                .token("STORE_OWNER_FCM_TOKEN") // 점주 FCM 토큰
                 .title(title)
                 .body(body)
                 .build();
 
         try {
             fcmService.sendMessage(request);
-            log.info("Notification sent to store owner: {}", STORE_OWNER_TOKEN);
+            log.info("점주에게 알림 전송 성공");
         } catch (Exception e) {
-            log.error("Failed to send notification to store owner", e);
+            log.error("점주 알림 전송 실패: {}", e.getMessage());
         }
     }
 }
+
