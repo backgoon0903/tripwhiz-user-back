@@ -28,6 +28,8 @@ public class LuggageStorageService {
     @Value("${server.store.owner.base.url}")
     private String storeOwnerBaseUrl;
 
+    private static final String STORE_OWNER_TOKEN = "ejNdaRA-F63OJWcgxg9Kgd:APA91bExX1NC-_ONgAOLw3-nIw7aam6UoOyu3xm5WDroQ4_ixpOshWpTL9OZYXl9RGByU1N5WK5t3L5e40AY5LEhDRxA3Cq4PnDpVc7xntPwzzizbZQp0ic";
+
     public LuggageStorageDTO createLuggageStorage(LuggageStorage luggageStorage) {
         // 로컬 데이터베이스에서 Spot 확인
         Spot spot = spotRepository.findById(luggageStorage.getStorageSpot().getSpno())
@@ -51,8 +53,12 @@ public class LuggageStorageService {
 
     private void sendLuggageToAdmin(LuggageStorage luggageStorage) {
         String url = storeOwnerBaseUrl + "/api/storeowner/luggagestorage/create";
-        restTemplate.postForObject(url, luggageStorage, Void.class);
-        log.info("LuggageStorage sent to Admin Server: {}", luggageStorage.getLsno());
+        try {
+            restTemplate.postForObject(url, luggageStorage, Void.class);
+            log.info("LuggageStorage sent to Admin Server: {}", luggageStorage.getLsno());
+        } catch (Exception e) {
+            log.error("Failed to send LuggageStorage to Admin Server", e);
+        }
     }
 
     private void sendStoreOwnerNotification(LuggageStorage luggageStorage) {
@@ -60,11 +66,16 @@ public class LuggageStorageService {
         String body = "보관 지점: " + luggageStorage.getStorageSpot().getSpotname();
 
         FCMRequestDTO request = FCMRequestDTO.builder()
-                .token("STORE_OWNER_FCM_TOKEN") // 실제 스토어오너 토큰으로 대체
+                .token(STORE_OWNER_TOKEN)
                 .title(title)
                 .body(body)
                 .build();
 
-        fcmService.sendMessage(request);
+        try {
+            fcmService.sendMessage(request);
+            log.info("Notification sent to store owner: {}", STORE_OWNER_TOKEN);
+        } catch (Exception e) {
+            log.error("Failed to send notification to store owner", e);
+        }
     }
 }

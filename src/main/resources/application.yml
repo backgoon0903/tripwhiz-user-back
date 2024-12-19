@@ -74,5 +74,5 @@ server:
   store:
     owner:
       base:
-        url: http://localhost:8082 # 로컬 환경 URL
-#        url: https://tripwhiz.store # 로컬 환경 URL
+#        url: http://localhost:8082 # 로컬 환경 URL
+        url: https://tripwhiz.store # 로컬 환경 URL
