@@ -1,8 +1,12 @@
 package com.tripwhiz.tripwhizuserback.member.dto;
 
-import lombok.Data;
+import lombok.*;
 
 @Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class MemberDTO {
 
     private String email;

@@ -1,7 +1,6 @@
 package com.tripwhiz.tripwhizuserback.cart.controller;
 
 import com.tripwhiz.tripwhizuserback.cart.dto.CartListDTO;
-import com.tripwhiz.tripwhizuserback.cart.dto.CartProductDTO;
 import com.tripwhiz.tripwhizuserback.cart.service.CartService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -32,8 +31,8 @@ public class CartController {
 
     // 장바구니에 물건 추가
     @PostMapping("/add")
-    public ResponseEntity<String> addToCart(@RequestBody CartProductDTO cartProductDTO) {
-        cartService.addToCart(cartProductDTO);
+    public ResponseEntity<String> addToCart(@RequestBody CartListDTO cartListDTO) {
+        cartService.addToCart(cartListDTO);
         return ResponseEntity.ok("Product added to cart successfully");
     }
 
@@ -43,6 +42,22 @@ public class CartController {
 //        List<CartProductDTO> cartItems = cartService.getCartItems();
 //        return ResponseEntity.ok(cartItems);
 //    }
+
+
+@PatchMapping("/changeQty")
+public ResponseEntity<Void> changeQty(@RequestBody CartListDTO cartListDTO) {
+    log.info("Received changeQty request: {}", cartListDTO);
+
+    String email = cartListDTO.getEmail();
+    Long pno = cartListDTO.getPno();
+    int qty = cartListDTO.getQty();
+
+    cartService.changeQty(email, pno, qty); // 서비스 호출
+    log.info("Changed quantity for product ID: {} to {} by user: {}", pno, qty, email);
+
+    return ResponseEntity.noContent().build(); // 204 No Content 반환
+}
+
 
     @DeleteMapping("delete/{pno}")
     public ResponseEntity<Void> deleteByProduct(

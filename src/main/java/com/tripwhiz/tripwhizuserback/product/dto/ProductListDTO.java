@@ -1,5 +1,6 @@
 package com.tripwhiz.tripwhizuserback.product.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.tripwhiz.tripwhizuserback.category.domain.Category;
 import com.tripwhiz.tripwhizuserback.category.domain.SubCategory;
 import com.tripwhiz.tripwhizuserback.product.domain.Product;
@@ -15,6 +16,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductListDTO {
 
     private Long pno;             // 상품 번호
@@ -23,6 +25,7 @@ public class ProductListDTO {
     private String pdesc;
     private Long cno;      // 상위 카테고리 ID
     private Long scno;  // 하위 카테고리 ID
+    private List<Long> tnos;
     private List<AttachFile> attachFiles; // JH
 
     public Product toEntity(Category category, SubCategory subCategory) {

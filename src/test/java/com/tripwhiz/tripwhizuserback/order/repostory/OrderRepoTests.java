@@ -125,7 +125,9 @@ public class OrderRepoTests {
             // OrderDetails 생성
             OrderDetails orderDetails = OrderDetails.builder()
                     .order(randomOrder)
-                    .product(randomProduct)
+                    .pno(randomProduct.getPno())
+                    .pname(randomProduct.getPname())
+                    .price(randomProduct.getPrice())
                     .amount(randomAmount)
                     .build();
 

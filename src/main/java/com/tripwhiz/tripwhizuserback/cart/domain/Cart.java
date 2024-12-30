@@ -30,25 +30,23 @@ public class Cart {
     private int qty;
 
     @Column(nullable = false)
+    @Builder.Default
     private boolean delFlag = false;
 
-    // 수량변경
-    public void changeQty(int qty) {
-        if (qty == 0) {
-            throw new IllegalArgumentException("Quantity change must not be zero.");
-        }
-
-        int newQty = this.qty + qty;
-
-        if (newQty < 0) {
+    public void setQty(int qty) {
+        if (qty < 0) {
             throw new IllegalArgumentException("Quantity cannot be less than zero.");
         }
-
-        this.qty = newQty;
+        this.qty = qty;
     }
 
     public void softDelete() {
         this.delFlag = true;
+    }
+
+    // 필요시 사용할 delFlag setter
+    public void setDelFlag(boolean delFlag) {
+        this.delFlag = delFlag;
     }
 
 }

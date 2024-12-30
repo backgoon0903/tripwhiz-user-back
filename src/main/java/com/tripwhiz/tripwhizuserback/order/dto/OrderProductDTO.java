@@ -1,6 +1,5 @@
 package com.tripwhiz.tripwhizuserback.order.dto;
 
-import com.tripwhiz.tripwhizuserback.product.dto.ProductDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OrderProductDTO {
 
-    private ProductDTO product;
-    private int amount;
-
+    private Long pno;   // 상품 번호
+    private String pname; // 상품 이름
+    private int price;  // 상품 가격
+    private int amount; // 수량
 }
