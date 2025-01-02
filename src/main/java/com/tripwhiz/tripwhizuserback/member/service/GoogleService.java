@@ -23,6 +23,8 @@ public class GoogleService {
 
     private final MemberRepository memberRepository;
 
+    private final MemberService memberService;
+
     //구글 인증을 통해 사용자 정보를 가져오는 메서드
     public MemberDTO authGoogle(String accessToken) {
 
@@ -66,6 +68,8 @@ public class GoogleService {
         memberDTO.setPw(pw);
         memberDTO.setName(name);
         memberDTO.setProvider("google");
+
+        memberService.sendMember(memberDTO);
 
         return memberDTO;
     }
