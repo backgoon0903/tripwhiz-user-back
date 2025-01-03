@@ -32,7 +32,7 @@ public class OrderController {
     public ResponseEntity<?> createOrder(
             @RequestHeader @NotBlank(message = "Email cannot be blank") String email,
             @RequestParam Long spno,
-            @RequestParam @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}",
+            @RequestParam @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}",
                     message = "Invalid date format. Use yyyy-MM-ddTHH:mm") String pickUpDate) {
 
         try {
