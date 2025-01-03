@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Map;
 
 @Log4j2
 @Service
@@ -86,5 +87,22 @@ public class MemberService {
         }
 
     }
+
+    public void sendMember(MemberDTO memberDTO) {
+        String endpoint = "/api/admin/member/save";
+        String adminApiEndpoint = adminApiUrl + endpoint;
+
+        // 요청 헤더 설정
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json"); // JSON 요청인 경우
+
+        // 요청 엔티티 생성
+        HttpEntity<MemberDTO> requestEntity = new HttpEntity<>(memberDTO, headers);
+
+        ResponseEntity<Map> response = restTemplate.exchange(adminApiEndpoint, HttpMethod.POST, requestEntity, Map.class);
+        log.info("Response body: " + response.getBody());
+
+    }
+
 
 }

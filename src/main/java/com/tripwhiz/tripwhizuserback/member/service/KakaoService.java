@@ -24,6 +24,8 @@ public class KakaoService {
 
     private final MemberRepository memberRepository;
 
+    private final MemberService memberService;
+
     // 카카오 인증을 통해 사용자 정보를 가져오는 메서드
     public MemberDTO authKakao(String accessToken) {
 
@@ -59,13 +61,20 @@ public class KakaoService {
                 .name(nickname)
                 .provider("kakao")
                 .build();
+
+        log.info("00000000000000000000000000000");
+        log.info(newMember);
         memberRepository.save(newMember); // 새로운 회원을 데이터베이스에 저장
+        memberRepository.flush();
 
         // 생성된 회원 정보를 MemberDTO로 반환
         memberDTO.setEmail(email);
         memberDTO.setPw(pw);
         memberDTO.setName(nickname);
         memberDTO.setProvider("kakao");
+        log.info("Before sending member info: " + memberDTO);
+
+        memberService.sendMember(memberDTO);
 
         return memberDTO;
     }
@@ -120,4 +129,3 @@ public class KakaoService {
 
 
 }
-
