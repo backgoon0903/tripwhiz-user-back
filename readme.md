@@ -54,10 +54,10 @@
 
 ## 🛠Team
 
-| Image        | Name   | Role        | GitHub                                   |
-|--------------|--------|-------------|------------------------------------------|
-| ![박주희](./images/juhui.jpg) | 박주희    | Team Leader | [GitHub Profile](https://github.com/eggzuxi)       |
-| ![차민주](./images/minju.png) | 차민주    | Full Stack  | [GitHub Profile](https://github.com/backgoon0903) |
-| ![박신영](./images/sinyong.jpg) | 박신영    | Full Stack  | [GitHub Profile](https://github.com/ssinyong)     |
-| ![진성오](./images/sungoh.jpg) | 진성오    | Full Stack  | [GitHub Profile](https://github.com/jin-sung-oh)  |
-| ![최설아](./images/seola.jpg) | 최설아    | Full Stack  | [GitHub Profile](https://github.com/Seola-CHOE)   |
+| Image       | Name   | Role        | GitHub                                   |
+|-------------|--------|-------------|------------------------------------------|
+| <img src="./images/juhui.jpg" width="100px" alt="박주희" /> | 박주희    | Team Leader | [GitHub Profile](https://github.com/eggzuxi)       |
+| <img src="./images/minju.png" width="100px" alt="차민주" /> | 차민주    | Full Stack  | [GitHub Profile](https://github.com/backgoon0903) |
+| <img src="./images/sinyong.jpg" width="100px" alt="박신영" /> | 박신영    | Full Stack  | [GitHub Profile](https://github.com/ssinyong)     |
+| <img src="./images/sungoh.jpg" width="100px" alt="진성오" /> | 진성오    | Full Stack  | [GitHub Profile](https://github.com/jin-sung-oh)  |
+| <img src="./images/seola.jpg" width="100px" alt="최설아" /> | 최설아    | Full Stack  | [GitHub Profile](https://github.com/Seola-CHOE)   |
